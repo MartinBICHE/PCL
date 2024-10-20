@@ -17,10 +17,9 @@ repositories {
 
 dependencies {
     // Use JUnit test framework.
-    testImplementation(libs.junit)
-
-    // This dependency is used by the application.
-    implementation(libs.guava)
+	implementation(platform("org.junit:junit-bom:5.11.2"))
+	implementation("org.junit.jupiter:junit-jupiter")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -33,4 +32,11 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "eu.telecomnancy.pcl.serpython.Main"
+}
+
+tasks.test {
+	useJUnitPlatform()
+	testLogging {
+		events("passed", "skipped", "failed")
+	}
 }

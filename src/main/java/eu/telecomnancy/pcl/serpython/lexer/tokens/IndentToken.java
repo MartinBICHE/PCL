@@ -22,7 +22,7 @@ public abstract class IndentToken extends Token {
      * Represents the beginning of an indented block in the lexer.
      * This token is used to signify the start of a new indentation level.
      */
-    public class BeginToken extends IndentToken {
+    public static class BeginToken extends IndentToken {
         public BeginToken(Span span) {
             super(span);
         }};
@@ -30,7 +30,7 @@ public abstract class IndentToken extends Token {
      * Represents the end fof an intended block in the lexer.
      * This token is used to signify the end of an existing indentation level.
      */
-    public class EndToken extends IndentToken {
+    public static class EndToken extends IndentToken {
         public EndToken(Span span) {
             super(span);
         }};

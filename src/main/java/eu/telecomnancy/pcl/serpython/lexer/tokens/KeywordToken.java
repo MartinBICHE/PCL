@@ -19,7 +19,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The ForToken class represents a 'for' keyword token.
      */
-    public class ForToken extends KeywordToken {
+    public static class ForToken extends KeywordToken {
         /**
          * Constructs a new ForToken with the specified span.
          *
@@ -33,7 +33,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The IfToken class represents an 'if' keyword token.
      */
-    public class IfToken extends KeywordToken {
+    public static class IfToken extends KeywordToken {
         /**
          * Constructs a new IfToken with the specified span.
          *
@@ -47,7 +47,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The ElseToken class represents an 'else' keyword token.
      */
-    public class ElseToken extends KeywordToken {
+    public static class ElseToken extends KeywordToken {
         /**
          * Constructs a new ElseToken with the specified span.
          *
@@ -61,7 +61,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The DefToken class represents a 'def' keyword token.
      */
-    public class DefToken extends KeywordToken {
+    public static class DefToken extends KeywordToken {
         /**
          * Constructs a new DefToken with the specified span.
          *
@@ -75,7 +75,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The PrintToken class represents a 'print' keyword token.
      */
-    public class PrintToken extends KeywordToken {
+    public static class PrintToken extends KeywordToken {
         /**
          * Constructs a new PrintToken with the specified span.
          *
@@ -89,7 +89,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The InToken class represents an 'in' keyword token.
      */
-    public class InToken extends KeywordToken {
+    public static class InToken extends KeywordToken {
         /**
          * Constructs a new InToken with the specified span.
          *
@@ -103,7 +103,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The ReturnToken class represents a 'return' keyword token.
      */
-    public class ReturnToken extends KeywordToken {
+    public static class ReturnToken extends KeywordToken {
         /**
          * Constructs a new ReturnToken with the specified span.
          *
@@ -117,7 +117,7 @@ public abstract class KeywordToken extends Token {
     /**
      * The EofToken class represents the End Of File.
      */
-    public class EofToken extends KeywordToken {
+    public static class EofToken extends KeywordToken {
 
         /**
          * Constructs a new EofToken with the specified span.

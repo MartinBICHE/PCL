@@ -26,7 +26,7 @@ public abstract class BooleanToken extends LitteralToken {
     /**
      * The TrueToken class represents a 'true' boolean token.
      */
-    public class TrueToken extends BooleanToken {
+    public static class TrueToken extends BooleanToken {
         /**
          * Constructs a new TrueToken with the specified span.
          *
@@ -50,7 +50,7 @@ public abstract class BooleanToken extends LitteralToken {
     /**
      * The FalseToken class represents a 'false' boolean token.
      */
-    public class FalseToken extends BooleanToken {
+    public static class FalseToken extends BooleanToken {
         /**
          * Constructs a new FalseToken with the specified span.
          *
