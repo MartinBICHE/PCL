@@ -48,4 +48,12 @@ public class Span {
     public int getLength() {
         return length;
     }
+
+    public String toString() {
+        return "<" +
+                "line=" + line +
+                ", column=" + column +
+                ", length=" + length +
+                ">";
+    }
 }

@@ -34,4 +34,10 @@ public abstract class IndentToken extends Token {
         public EndToken(Span span) {
             super(span);
         }};
+
+    public String toString() {
+        return "IndentToken{" +
+                "span=" + span.toString() +
+                '}';
+    }
 };

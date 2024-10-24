@@ -14,4 +14,12 @@ public class StringToken extends LitteralToken {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "StringToken{" +
+                "value='" + value + '\'' +
+                ", span=" + span.toString() +
+                '}';
+    }
 }

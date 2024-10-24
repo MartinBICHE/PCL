@@ -14,4 +14,11 @@ public class IntegerToken extends LitteralToken {
     public int getValue() {
         return value;
     }
+
+    public String toString() {
+        return "IntegerToken{" +
+            "value=" + value +
+            ", span=" + span.toString() +
+            '}';
+    }
 }

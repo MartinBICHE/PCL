@@ -7,7 +7,7 @@ import eu.telecomnancy.pcl.serpython.common.Span;
  * Each token has a span which indicates its position in the source code.
  */
 public abstract class Token {
-    final private Span span;
+    final protected Span span;
 
     /**
      * Constructs a Token with the specified span.
@@ -27,4 +27,6 @@ public abstract class Token {
     public Span getSpan() {
         return span;
     }
+
+    public abstract String toString();
 }

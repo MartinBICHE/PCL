@@ -128,4 +128,10 @@ public abstract class KeywordToken extends Token {
             super(span);
         }
     }
+
+    public String toString() {
+        return "KeywordToken{" +
+                "span=" + span.toString() +
+                '}';
+    }
 }
