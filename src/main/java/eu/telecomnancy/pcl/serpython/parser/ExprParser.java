@@ -15,66 +15,50 @@ public class ExprParser {
     }
 
     public static Expression parseAddSubExpr(Parser parser) {
-        if (parser.peek() == null) {
+        Token curToken = parser.peek();
+        if (curToken == null) {
             return null;
         }
         Expression left = parseMulDivRemExpr(parser);
-        if (left == null) {
-            return null;
-        }
-        Token curToken = parser.peek();
-        if (curToken instanceof OperatorToken.PlusToken) {
-            parser.consume();
-            Expression right = parseAddSubExpr(parser);
-            if (right == null) {
+        curToken = parser.peek();
+        while (curToken instanceof OperatorToken.PlusToken || curToken instanceof OperatorToken.MinusToken) {
+            if (curToken instanceof OperatorToken.PlusToken) {
+                parser.consume();
+                left = new Expression.Addition(left, parseMulDivRemExpr(parser));
+            } else if (curToken instanceof OperatorToken.MinusToken) {
+                parser.consume();
+                left = new Expression.Subtraction(left, parseMulDivRemExpr(parser));
+            } else {
                 return null;
             }
-            return new Expression.Addition(left, right);
-        } else if (curToken instanceof OperatorToken.MinusToken) {
-            parser.consume();
-            Expression right = parseAddSubExpr(parser);
-            if (right == null) {
-                return null;
-            }
-            return new Expression.Subtraction(left, right);
-        } else {
-            return left;
+            curToken = parser.peek();
         }
+        return left;
     }
 
     public static Expression parseMulDivRemExpr(Parser parser) {
-        if (parser.peek() == null) {
+        Token curToken = parser.peek();
+        if (curToken == null) {
             return null;
         }
         Expression left = parseNegExpr(parser);
-        if (left == null) {
-            return null;
+        curToken = parser.peek();
+        while (curToken instanceof OperatorToken.MultiplyToken || curToken instanceof OperatorToken.DivideToken || curToken instanceof OperatorToken.ModuloToken) {
+            if (curToken instanceof OperatorToken.MultiplyToken) {
+                parser.consume();
+                left = new Expression.Multiplication(left, parseNegExpr(parser));
+            } else if (curToken instanceof OperatorToken.DivideToken) {
+                parser.consume();
+                left = new Expression.Division(left, parseNegExpr(parser));
+            } else if (curToken instanceof OperatorToken.ModuloToken) {
+                parser.consume();
+                left = new Expression.Reminder(left, parseNegExpr(parser));
+            } else {
+                return null;
+            }
+            curToken = parser.peek();
         }
-        Token curToken = parser.peek();
-        if (curToken instanceof OperatorToken.MultiplyToken) {
-            parser.consume();
-            Expression right = parseMulDivRemExpr(parser);
-            if (right == null) {
-                return null;
-            }
-            return new Expression.Multiplication(left, right);
-        } else if (curToken instanceof OperatorToken.DivideToken) {
-            parser.consume();
-            Expression right = parseMulDivRemExpr(parser);
-            if (right == null) {
-                return null;
-            }
-            return new Expression.Division(left, right);
-        } else if (curToken instanceof OperatorToken.ModuloToken) {
-            parser.consume();
-            Expression right = parseMulDivRemExpr(parser);
-            if (right == null) {
-                return null;
-            }
-            return new Expression.Reminder(left, right);
-        } else {
-            return left;
-        }
+        return left;
     }
 
     public static Expression parseNegExpr(Parser parser) {
