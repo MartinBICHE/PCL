@@ -10,4 +10,21 @@ public class StringLitteral extends Expression {
     public String getValue() {
         return value;
     }    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final StringLitteral other = (StringLitteral) obj;
+        return this.value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return "\"" + value + "\"";
+    }
 }

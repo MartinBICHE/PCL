@@ -10,4 +10,21 @@ public class NumberLitteral extends Expression {
     public int getValue() {
         return value;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NumberLitteral other = (NumberLitteral) obj;
+        return this.value == other.value;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
 }
