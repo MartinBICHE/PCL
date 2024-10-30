@@ -25,7 +25,7 @@ public abstract class IdentToken extends LitteralToken {
     public String toString() {
         return "IdentToken{" +
                 "name='" + name + '\'' +
-                ", span=" + span.toString() +
+                ", span=" + Span.formatSpan(span) +
                 '}';
     }
 }

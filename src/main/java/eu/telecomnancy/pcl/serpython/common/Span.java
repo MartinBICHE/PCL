@@ -56,4 +56,17 @@ public class Span {
                 ", length=" + length +
                 ">";
     }
+
+    /**
+     * Formats a Span object as a string.
+     *
+     * @param span the Span object to format, if null, the return string is "<null>"
+     * @return a string representation of the Span object
+     */
+    public static String formatSpan(Span span) {
+        if (span == null) {
+            return "<null>";
+        }
+        return span.toString();
+    }
 }

@@ -131,7 +131,7 @@ public abstract class KeywordToken extends Token {
 
     public String toString() {
         return "KeywordToken{" +
-                "span=" + span.toString() +
+                "span=" + Span.formatSpan(span) +
                 '}';
     }
 }

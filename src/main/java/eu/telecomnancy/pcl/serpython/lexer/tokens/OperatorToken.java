@@ -144,6 +144,6 @@ public class OperatorToken extends Token {
     @Override
     public String toString() {
         return "OperatorToken{" +
-                "span=" + span.toString() + '}';
+                "span=" + Span.formatSpan(span) + '}';
     }
 }
