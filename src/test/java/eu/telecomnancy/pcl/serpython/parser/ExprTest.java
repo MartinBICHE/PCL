@@ -8,13 +8,14 @@ import eu.telecomnancy.pcl.serpython.ast.Expression;
 import eu.telecomnancy.pcl.serpython.ast.NoneLitteral;
 import eu.telecomnancy.pcl.serpython.ast.NumberLitteral;
 import eu.telecomnancy.pcl.serpython.ast.StringLitteral;
+import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
 import java.util.*;
 
 public class ExprTest {
 
     @Test
-    public void testNumberLitteral() {
+    public void testNumberLitteral() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(29, null));
         Parser parser = new Parser(tokens);
@@ -25,7 +26,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testStringLitteral() {
+    public void testStringLitteral() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new StringToken("Hello, world!".intern(), null));
         Parser parser = new Parser(tokens);
@@ -36,7 +37,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testBooleanLitteralTrue() {
+    public void testBooleanLitteralTrue() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new BooleanToken.TrueToken(null));
         Parser parser = new Parser(tokens);
@@ -47,7 +48,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testBooleanLitteralFalse() {
+    public void testBooleanLitteralFalse() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new BooleanToken.FalseToken(null));
         Parser parser = new Parser(tokens);
@@ -58,7 +59,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testNoneLitteral() {
+    public void testNoneLitteral() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new NoneToken(null));
         Parser parser = new Parser(tokens);
@@ -68,7 +69,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testParenthesedLitteral() {
+    public void testParenthesedLitteral() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new OperatorToken.OpeningParenthesisToken(null));
         tokens.add(new IntegerToken(42, null));
@@ -81,7 +82,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testNegatedLitteral() {
+    public void testNegatedLitteral() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new OperatorToken.MinusToken(null));
         tokens.add(new IntegerToken(42, null));
@@ -94,7 +95,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testSimpleAdditionExpr() {
+    public void testSimpleAdditionExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.PlusToken(null));
@@ -110,7 +111,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testAdditiveAdditionExpr() {
+    public void testAdditiveAdditionExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.PlusToken(null));
@@ -126,7 +127,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testAdditiveSubstractionExpr() {
+    public void testAdditiveSubstractionExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.MinusToken(null));
@@ -142,7 +143,7 @@ public class ExprTest {
     }
 
     @Test
-    public void testMixedAddSubExpr() {
+    public void testMixedAddSubExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.MinusToken(null));
@@ -156,15 +157,9 @@ public class ExprTest {
         assertNotNull(out);
 
         Expression expected = new Expression.Subtraction(
-            new Expression.Addition(
-                new Expression.Subtraction(
-                    new NumberLitteral(42),
-                    new NumberLitteral(69)
-                ),
-                new NumberLitteral(1337)
-            ),
-            new NumberLitteral(5147)
-        );
+                new Expression.Addition(new Expression.Subtraction(new NumberLitteral(42), new NumberLitteral(69)),
+                        new NumberLitteral(1337)),
+                new NumberLitteral(5147));
 
         System.err.println(out);
         System.err.println(expected);
@@ -172,8 +167,8 @@ public class ExprTest {
         assertEquals(out, expected);
     }
 
-    @Test 
-    public void testSimpleMultiplicationExpr() {
+    @Test
+    public void testSimpleMultiplicationExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.MultiplyToken(null));
@@ -181,17 +176,14 @@ public class ExprTest {
         Parser parser = new Parser(tokens);
         Expression out = ExprParser.parseExpr(parser);
         assertNotNull(out);
-        
-        Expression expected = new Expression.Multiplication(
-            new NumberLitteral(42),
-            new NumberLitteral(69)
-        );
+
+        Expression expected = new Expression.Multiplication(new NumberLitteral(42), new NumberLitteral(69));
 
         assertEquals(out, expected);
     }
 
     @Test
-    public void testAdditiviteMultiplicationExpr() {
+    public void testAdditiviteMultiplicationExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.MultiplyToken(null));
@@ -201,20 +193,16 @@ public class ExprTest {
         Parser parser = new Parser(tokens);
         Expression out = ExprParser.parseExpr(parser);
         assertNotNull(out);
-        
+
         Expression expected = new Expression.Multiplication(
-            new Expression.Multiplication(
-                new NumberLitteral(42),
-                new NumberLitteral(69)
-            ),
-            new NumberLitteral(1337)
-        );
+                new Expression.Multiplication(new NumberLitteral(42), new NumberLitteral(69)),
+                new NumberLitteral(1337));
 
         assertEquals(out, expected);
     }
 
     @Test
-    public void testMixedMulDivRemExpr() {
+    public void testMixedMulDivRemExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.MultiplyToken(null));
@@ -228,21 +216,15 @@ public class ExprTest {
         assertNotNull(out);
 
         Expression expected = new Expression.Reminder(
-            new Expression.Division(
-                new Expression.Multiplication(
-                    new NumberLitteral(42),
-                    new NumberLitteral(69)
-                ),
-                new NumberLitteral(1337)
-            ),
-            new NumberLitteral(5147)
-        );
+                new Expression.Division(new Expression.Multiplication(new NumberLitteral(42), new NumberLitteral(69)),
+                        new NumberLitteral(1337)),
+                new NumberLitteral(5147));
 
         assertEquals(out, expected);
     }
 
     @Test
-    public void testAddMulExpr() {
+    public void testAddMulExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.PlusToken(null));
@@ -253,19 +235,14 @@ public class ExprTest {
         Expression out = ExprParser.parseExpr(parser);
         assertNotNull(out);
 
-        Expression expected = new Expression.Addition(
-            new NumberLitteral(42),
-            new Expression.Multiplication(
-                new NumberLitteral(69),
-                new NumberLitteral(1337)
-            )
-        );
+        Expression expected = new Expression.Addition(new NumberLitteral(42),
+                new Expression.Multiplication(new NumberLitteral(69), new NumberLitteral(1337)));
 
         assertEquals(out, expected);
     }
 
     @Test
-    public void testAddSubMulDivExpr() {
+    public void testAddSubMulDivExpr() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new IntegerToken(42, null));
         tokens.add(new OperatorToken.PlusToken(null));
@@ -281,19 +258,31 @@ public class ExprTest {
         assertNotNull(out);
 
         Expression expected = new Expression.Subtraction(
-            new Expression.Addition(
-                new NumberLitteral(42),
-                new NumberLitteral(69)
-            ),
-            new Expression.Division(
-                new Expression.Multiplication(
-                    new NumberLitteral(1337),
-                    new NumberLitteral(5147)
-                ),
-                new NumberLitteral(42)
-            )
-        );
+                new Expression.Addition(new NumberLitteral(42), new NumberLitteral(69)),
+                new Expression.Division(
+                        new Expression.Multiplication(new NumberLitteral(1337), new NumberLitteral(5147)),
+                        new NumberLitteral(42)));
 
         assertEquals(out, expected);
+    }
+
+    @Test
+    public void testEmptyParenthesis() {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        Parser parser = new Parser(tokens);
+        assertThrows(ParserError.class, () -> {
+            ExprParser.parseExpr(parser);
+        });
+    }
+
+    @Test
+    public void testEmptyExpr() {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        Parser parser = new Parser(tokens);
+        assertThrows(ParserError.class, () -> {
+            ExprParser.parseExpr(parser);
+        });
     }
 }

@@ -1,6 +1,8 @@
 package eu.telecomnancy.pcl.serpython.parser;
 
 import eu.telecomnancy.pcl.serpython.ast.Expression;
+import eu.telecomnancy.pcl.serpython.errors.ParserError;
+import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.BooleanToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IdentToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IntegerToken;
@@ -10,14 +12,14 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.StringToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
 
 public class ExprParser {
-    public static Expression parseExpr(Parser parser) {
+    public static Expression parseExpr(Parser parser) throws ParserError {
         return parseAddSubExpr(parser);
     }
 
-    public static Expression parseAddSubExpr(Parser parser) {
+    public static Expression parseAddSubExpr(Parser parser) throws ParserError {
         Token curToken = parser.peek();
         if (curToken == null) {
-            return null;
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
         }
         Expression left = parseMulDivRemExpr(parser);
         curToken = parser.peek();
@@ -28,18 +30,16 @@ public class ExprParser {
             } else if (curToken instanceof OperatorToken.MinusToken) {
                 parser.consume();
                 left = new Expression.Subtraction(left, parseMulDivRemExpr(parser));
-            } else {
-                return null;
             }
             curToken = parser.peek();
         }
         return left;
     }
 
-    public static Expression parseMulDivRemExpr(Parser parser) {
+    public static Expression parseMulDivRemExpr(Parser parser) throws ParserError {
         Token curToken = parser.peek();
         if (curToken == null) {
-            return null;
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
         }
         Expression left = parseNegExpr(parser);
         curToken = parser.peek();
@@ -53,17 +53,15 @@ public class ExprParser {
             } else if (curToken instanceof OperatorToken.ModuloToken) {
                 parser.consume();
                 left = new Expression.Reminder(left, parseNegExpr(parser));
-            } else {
-                return null;
             }
             curToken = parser.peek();
         }
         return left;
     }
 
-    public static Expression parseNegExpr(Parser parser) {
+    public static Expression parseNegExpr(Parser parser) throws ParserError {
         if (parser.peek() == null) {
-            return null;
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
         }
         if (parser.peek() instanceof OperatorToken.MinusToken) {
             parser.consume();
@@ -73,10 +71,10 @@ public class ExprParser {
         }
     }
 
-    public static Expression parseParenthesisExpr(Parser parser) {
+    public static Expression parseParenthesisExpr(Parser parser) throws ParserError {
         Token curToken = parser.peek();
         if (curToken == null) {
-            return null;
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
         }
         if (curToken instanceof OperatorToken.OpeningParenthesisToken) {
             parser.consume();
@@ -85,7 +83,7 @@ public class ExprParser {
                 parser.consume();
                 return expr;
             }
-            return null;
+            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
         } else {
             if (curToken instanceof StringToken) {
                 return AtomParser.parseStringLitteral(parser);
@@ -98,7 +96,7 @@ public class ExprParser {
             } else if (curToken instanceof IdentToken) {
                 return AtomParser.parseIdentifier(parser);
             } else {
-                return null;
+                throw new ParserError(ParserErrorKind.ExpectedExpression, parser.getPosition(), parser.peek());
             }
         }
     }
