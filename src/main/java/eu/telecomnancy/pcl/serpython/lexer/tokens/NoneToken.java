@@ -10,7 +10,7 @@ public class NoneToken extends LitteralToken {
 
     public String toString() {
         return "NoneToken{" +
-                "span=" + span.toString() +
+                "span=" + Span.formatSpan(span) +
                 '}';
     }
 }

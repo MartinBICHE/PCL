@@ -73,7 +73,7 @@ public abstract class BooleanToken extends LitteralToken {
 
     public String toString() {
         return "BooleanToken{" +
-                "span=" + span.toString() +
+                "span=" + Span.formatSpan(span) +
                 '}';
     }
 }

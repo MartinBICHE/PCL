@@ -19,7 +19,7 @@ public class StringToken extends LitteralToken {
     public String toString() {
         return "StringToken{" +
                 "value='" + value + '\'' +
-                ", span=" + span.toString() +
+                ", span=" + Span.formatSpan(span) +
                 '}';
     }
 }

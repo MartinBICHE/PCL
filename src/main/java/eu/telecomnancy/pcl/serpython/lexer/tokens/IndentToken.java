@@ -37,7 +37,7 @@ public abstract class IndentToken extends Token {
 
     public String toString() {
         return "IndentToken{" +
-                "span=" + span.toString() +
+                "span=" + Span.formatSpan(span) +
                 '}';
     }
 };
