@@ -24,6 +24,11 @@ public class BooleanLitteral extends Expression {
     }
 
     @Override
+    public int hashCode() {
+        return Boolean.hashCode(value);
+    }
+
+    @Override
     public String toString() {
         return Boolean.toString(value);
     }

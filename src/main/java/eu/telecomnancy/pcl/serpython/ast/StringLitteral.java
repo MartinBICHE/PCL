@@ -23,6 +23,11 @@ public class StringLitteral extends Expression {
         return this.value.equals(other.value);
     }
 
+    @Override 
+    public int hashCode() {
+        return value.hashCode();
+    }
+
     @Override
     public String toString() {
         return "\"" + value + "\"";

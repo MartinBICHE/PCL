@@ -25,6 +25,11 @@ public abstract class Expression extends AbstractNode {
         }
 
         @Override
+        public int hashCode() {
+            return expression.hashCode() * 7 + 18;
+        }
+
+        @Override
         public String toString() {
             return "-(" + expression.toString() + ")";
         }
@@ -60,6 +65,11 @@ public abstract class Expression extends AbstractNode {
         }
 
         public abstract String getOperator();
+
+        @Override
+        public int hashCode() {
+            return left.hashCode() * 7 + right.hashCode() * 13 + 18 + getOperator().hashCode();
+        }
 
         @Override
         public String toString() {

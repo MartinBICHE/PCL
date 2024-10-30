@@ -17,6 +17,11 @@ public class NoneLitteral extends Expression {
     }
 
     @Override
+    public int hashCode() {
+        return 713584474;
+    }
+
+    @Override
     public String toString() {
         return "None";
     }

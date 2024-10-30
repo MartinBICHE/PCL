@@ -24,6 +24,11 @@ public class NumberLitteral extends Expression {
     }
 
     @Override
+    public int hashCode() {
+        return Integer.hashCode(value);
+    }
+
+    @Override
     public String toString() {
         return Integer.toString(value);
     }
