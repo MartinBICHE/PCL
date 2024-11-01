@@ -11,11 +11,21 @@ public class Parser {
     private ArrayList<Token> tokens;
     private int index;
 
+    /**
+     * Constructs a Parser object with the given list of tokens.
+     * 
+     * @param tokens the list of tokens to be parsed
+     */
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
         this.index = 0;
     }
 
+    /**
+     * Returns the next token in the parser without consuming it.
+     * 
+     * @return the next token in the parser, or null if the end of the input has been reached
+     */
     protected Token peek() {
         if (index < tokens.size()) {
             return tokens.get(index);
@@ -24,6 +34,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Returns the token at the specified offset from the current position without consuming it.
+     * 
+     * @param offset the offset from the current position
+     * @return the token at the specified offset, or null if the end of the input has been reached
+     */
     protected Token peek(int offset) {
         if (index + offset < tokens.size()) {
             return tokens.get(index + offset);
@@ -32,6 +48,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Consumes and returns the next token in the parser.
+     * 
+     * @return the consumed token
+     * @throws ParserError if the end of the input has been reached
+     */
     protected Token consume() throws ParserError {
         if (index < tokens.size()) {
             return tokens.get(index++);
@@ -40,6 +62,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the list of tokens.
+     */
     public void parse() {
         while (index < tokens.size()) {
             System.out.println(tokens.get(index));
@@ -55,7 +80,7 @@ public class Parser {
      * 
      * This method might return null if the last token has no span information.
      * 
-     * @return Span object representing the current position of the parser
+     * @return a Span object representing the current position of the parser
      * @see Span
      */
     public Span getPosition() {

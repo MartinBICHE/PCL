@@ -285,4 +285,224 @@ public class ExprTest {
             ExprParser.parseExpr(parser);
         });
     }
+
+    @Test
+    public void testEqualityExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.EqualToken(null));
+        tokens.add(new IntegerToken(69, null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.CompareEq(new NumberLitteral(42), new NumberLitteral(69));
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testAssociativeEqualityExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.EqualToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.EqualToken(null));
+        tokens.add(new IntegerToken(1337, null));
+        tokens.add(new OperatorToken.EqualToken(null));
+        tokens.add(new IntegerToken(5147, null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.CompareEq(
+            new Expression.CompareEq(
+                new Expression.CompareEq(
+                    new NumberLitteral(42),
+                    new NumberLitteral(69)
+                ),
+                new NumberLitteral(1337)
+            ),
+            new NumberLitteral(5147)
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testBunchOfComparisonExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.LessToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.LessEqualToken(null));
+        tokens.add(new IntegerToken(1337, null));
+        tokens.add(new OperatorToken.GreaterToken(null));
+        tokens.add(new IntegerToken(5147, null));
+        tokens.add(new OperatorToken.GreaterEqualToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.EqualToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.NotEqualToken(null));
+        tokens.add(new IntegerToken(1337, null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.CompareNeq(
+            new Expression.CompareEq(
+                new Expression.CompareGte(
+                    new Expression.CompareGt(
+                        new Expression.CompareLte(
+                            new Expression.CompareLt(
+                                new NumberLitteral(42),
+                                new NumberLitteral(69)
+                            ),
+                            new NumberLitteral(1337)
+                        ),
+                        new NumberLitteral(5147)
+                    ),
+                    new NumberLitteral(42)
+                ),
+                new NumberLitteral(69)
+            ),
+            new NumberLitteral(1337)
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test 
+    public void testComparePriorityExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.LessToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.PlusToken(null));
+        tokens.add(new IntegerToken(1337, null));
+        tokens.add(new OperatorToken.NotEqualToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+
+        Parser parser = new Parser(tokens);
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.CompareNeq(
+            new Expression.CompareLt(
+                new NumberLitteral(42),
+                new Expression.Addition(
+                    new NumberLitteral(69),
+                    new NumberLitteral(1337)
+                )
+            ),
+            new BooleanLitteral(true)
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testSimpleAndExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.AndToken(null));
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.FalseToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.And(
+            new BooleanLitteral(true),
+            new Expression.Not(new BooleanLitteral(false))
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testSimpleOrExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.OrToken(null));
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.FalseToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.Or(
+            new BooleanLitteral(true),
+            new Expression.Not(new BooleanLitteral(false))
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testMixedAndOrNotExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.AndToken(null));
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.FalseToken(null));
+        tokens.add(new OperatorToken.OrToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.Or(
+            new Expression.And(
+                new BooleanLitteral(true),
+                new Expression.Not(new BooleanLitteral(false))
+            ),
+            new BooleanLitteral(true)
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testMixedNotAnd() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.AndToken(null));
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.FalseToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.And(
+            new Expression.Not(new BooleanLitteral(true)),
+            new Expression.Not(new BooleanLitteral(false))
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testMixedNotAnd2() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.AndToken(null));
+        tokens.add(new OperatorToken.NotToken(null));
+        tokens.add(new BooleanToken.FalseToken(null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.Not(
+            new Expression.And(
+                new BooleanLitteral(true),
+                new Expression.Not(new BooleanLitteral(false))
+            )
+        );
+        assertEquals(out, expected);
+    }
 }
