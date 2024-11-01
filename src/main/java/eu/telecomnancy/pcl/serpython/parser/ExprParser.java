@@ -1,6 +1,11 @@
 package eu.telecomnancy.pcl.serpython.parser;
 
+import java.util.ArrayList;
+
+import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
+import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
+import eu.telecomnancy.pcl.serpython.ast.Identifier;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.BooleanToken;
@@ -196,10 +201,37 @@ public class ExprParser {
         }
         if (parser.peek() instanceof OperatorToken.MinusToken) {
             parser.consume();
-            return new Expression.Negation(parseParenthesisExpr(parser));
+            return new Expression.Negation(parseBracketExpr(parser));
         } else {
-            return parseParenthesisExpr(parser);
+            return parseBracketExpr(parser);
         }
+    }
+
+    /**
+     * Parses a array access (bracket expr) expression using the given parser.
+     *
+     * @param parser The parser to use for parsing.
+     * @return The parsed bracket expression.
+     * @throws ParserError If an error occurs during parsing.
+     */
+    public static Expression parseBracketExpr(Parser parser) throws ParserError {
+        Expression left = parseParenthesisExpr(parser);
+        Token curToken = parser.peek();
+        if (curToken == null) {
+            return left;
+        }
+        while (curToken instanceof OperatorToken.OpeningBracketToken) {
+            parser.consume();
+            Expression index = parseExpr(parser);
+            if (parser.peek() instanceof OperatorToken.ClosingBracketToken) {
+                parser.consume();
+                left = new Expression.ArrayGet(left, index);
+            } else {
+                throw new ParserError(ParserErrorKind.ExpectedClosingBracket, parser.getPosition(), parser.peek());
+            }
+            curToken = parser.peek();
+        }
+        return left;
     }
 
     /**
@@ -232,10 +264,92 @@ public class ExprParser {
             } else if (curToken instanceof NoneToken) {
                 return AtomParser.parseNoneLitteral(parser);
             } else if (curToken instanceof IdentToken) {
-                return AtomParser.parseIdentifier(parser);
+                Expression ident =  AtomParser.parseIdentifier(parser);
+                if (parser.peek() instanceof OperatorToken.OpeningParenthesisToken) {
+                    assert ident instanceof Identifier;
+                    return parseFunctionArgs(parser, (Identifier) ident);
+                } else {
+                    return ident;
+                }
+            } else if (curToken instanceof OperatorToken.OpeningBracketToken) {
+                return parseArrayExpr(parser);
             } else {
                 throw new ParserError(ParserErrorKind.ExpectedExpression, parser.getPosition(), parser.peek());
             }
         }
+    }
+
+    /**
+     * Parses an array expression using the given parser.
+     *
+     * @param parser The parser to use for parsing.
+     * @return The parsed array expression.
+     * @throws ParserError If an error occurs during parsing.
+     */
+    public static Expression parseArrayExpr(Parser parser) throws ParserError {
+        Token curToken = parser.peek();
+        if (curToken == null) {
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
+        }
+        if (curToken instanceof OperatorToken.OpeningBracketToken) {
+            parser.consume();
+            ArrayList<Expression> elements = new ArrayList<>();
+            while (!(parser.peek() instanceof OperatorToken.ClosingBracketToken)) {
+                if (parser.peek() != null) {
+                    elements.add(parseExpr(parser));
+                } else {
+                    throw new ParserError(ParserErrorKind.ExpectedExpression, parser.getPosition(), parser.peek());
+                }
+                if (parser.peek() instanceof OperatorToken.CommaToken) {
+                    parser.consume();
+                } else {
+                    break;
+                }
+            }
+            if (!(parser.peek() instanceof OperatorToken.ClosingBracketToken)) {
+                throw new ParserError(ParserErrorKind.ExpectedClosingBracket, parser.getPosition(), parser.peek());
+            }
+            parser.consume();
+            return new ArrayExpression(elements.toArray(new Expression[0]));
+        } else {
+            throw new ParserError(ParserErrorKind.ExpectedArray, parser.getPosition(), parser.peek());
+        }
+    }
+
+    /**
+     * Parses a function call expression using the given parser.
+     *
+     * @param parser The parser to use for parsing.
+     * @param function_name The name of the function to call.
+     * @return The parsed function call expression.
+     * @throws ParserError If an error occurs during parsing.
+     */
+    public static Expression parseFunctionArgs(Parser parser, Identifier function_name) throws ParserError {
+        Token curToken = parser.peek();
+        if (curToken == null) {
+            throw new ParserError(ParserErrorKind.UnexpectedEOF, parser.getPosition());
+        }
+        if (!(curToken instanceof OperatorToken.OpeningParenthesisToken)) {
+            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis, parser.getPosition(), parser.peek());
+        }
+        parser.consume();
+        ArrayList<Expression> args = new ArrayList<>();
+        while (!(parser.peek() instanceof OperatorToken.ClosingParenthesisToken)) {
+            if (parser.peek() != null) {
+                args.add(parseExpr(parser));
+            } else {
+                throw new ParserError(ParserErrorKind.ExpectedExpression, parser.getPosition(), parser.peek());
+            }
+            if (parser.peek() instanceof OperatorToken.CommaToken) {
+                parser.consume();
+            } else {
+                break;
+            }
+        }
+        if (!(parser.peek() instanceof OperatorToken.ClosingParenthesisToken)) {
+            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
+        }
+        parser.consume();
+        return new FunctionCall(function_name.getName(), args.toArray(new Expression[0]));
     }
 }

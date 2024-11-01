@@ -3,8 +3,12 @@ package eu.telecomnancy.pcl.serpython.parser;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
 import eu.telecomnancy.pcl.serpython.ast.BooleanLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
+import eu.telecomnancy.pcl.serpython.ast.Expression.ArrayGet;
+import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
+import eu.telecomnancy.pcl.serpython.ast.Identifier;
 import eu.telecomnancy.pcl.serpython.ast.NoneLitteral;
 import eu.telecomnancy.pcl.serpython.ast.NumberLitteral;
 import eu.telecomnancy.pcl.serpython.ast.StringLitteral;
@@ -504,5 +508,253 @@ public class ExprTest {
             )
         );
         assertEquals(out, expected);
+    }
+
+    @Test
+    public void testSimpleArrayGet() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("array".intern(), null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.ArrayGet(
+            new Identifier("array".intern()),
+            new NumberLitteral(42)
+        );
+        assertEquals(out, expected);
+    }
+
+    @Test
+    public void testMultiDimentionalArrayGet() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("array".intern(), null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.ArrayGet(
+            new Expression.ArrayGet(
+                new Identifier("array".intern()),
+                new NumberLitteral(42)
+            ),
+            new NumberLitteral(69)
+        );
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void testArrayInArrayIndex() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("array".intern(), null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IdentToken("index".intern(), null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new Expression.ArrayGet(
+            new Identifier("array".intern()),
+            new Expression.ArrayGet(
+                new Identifier("index".intern()),
+                new NumberLitteral(42)
+            )
+        );
+        assertEquals(expected, out);
+    }
+
+    @Test 
+    public void testSimpleArrayLitteralExpr1() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new ArrayExpression(new Expression[0]);
+        assertEquals(expected, out);
+    }
+
+    @Test 
+    public void testSimpleArrayLitteralExpr2() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        assertThrows(
+            ParserError.class,
+            () -> ExprParser.parseExpr(parser)
+        );  
+    }
+
+    @Test
+    public void testSimpleArrayLitteralExpr3() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new ArrayExpression(new Expression[] { new NumberLitteral(42) });
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void testSimpleArrayLitteralExpr4() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new IntegerToken(1337, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new ArrayExpression(
+            new Expression[] { 
+                new NumberLitteral(42),
+                new NumberLitteral(69),
+                new NumberLitteral(1337)
+            }
+        );
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void testArrayInArrayLitteralExpr() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new ArrayExpression(
+            new Expression[] { 
+                new ArrayExpression(new Expression[] { new NumberLitteral(42) }),
+                new ArrayExpression(new Expression[] { new NumberLitteral(69) })
+            }
+        );
+        assertEquals(expected, out);
+    }
+
+    @Test
+    public void testArrayInArrayLitteralExpr2() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IdentToken("index".intern(), null));
+        tokens.add(new OperatorToken.OpeningBracketToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        tokens.add(new OperatorToken.ClosingBracketToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new ArrayExpression(
+            new Expression[] { 
+                new ArrayExpression(new Expression[] { new NumberLitteral(42) }),
+                new ArrayExpression(new Expression[] { 
+                    new Expression.ArrayGet(
+                        new Identifier("index".intern()),
+                        new NumberLitteral(69)
+                    )
+                })
+            }
+        );
+        assertEquals(expected, out);
+    }
+
+    @Test 
+    public void testSimpleFunctionCallExpr1() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("function".intern(), null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new FunctionCall("function".intern(), new Expression[0]);
+        assertEquals(expected, out);
+    }
+
+    @Test 
+    public void testSimpleFunctionCallExpr2() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("function".intern(), null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new FunctionCall("function".intern(), new Expression[] { new NumberLitteral(42) });
+        assertEquals(expected, out);
+    }
+
+    @Test 
+    public void testSimpleFunctionCallExpr3() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new IdentToken("function".intern(), null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new IntegerToken(69, null));
+        tokens.add(new OperatorToken.CommaToken(null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        Parser parser = new Parser(tokens);
+        
+        Expression out = ExprParser.parseExpr(parser);
+        assertNotNull(out);
+
+        Expression expected = new FunctionCall("function".intern(), new Expression[] { new NumberLitteral(42), new NumberLitteral(69) });
+        assertEquals(expected, out);
     }
 }

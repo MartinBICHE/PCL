@@ -12,7 +12,10 @@ public enum ParserErrorKind {
     ExpectedKeyword(6,"A keyword was expected"),
     UnexpectedEOF(7,"Unexpected end of file"),
     ExpectedClosingParenthesis(8,"Expected closing parenthesis"),
-    ExpectedExpression(9,"Expected an expression");
+    ExpectedExpression(9,"Expected an expression"),
+    ExpectedClosingBracket(10,"Expected closing bracket"),
+    ExpectedArray(11,"Expected an array"),
+    ExpectedOpeningParenthesis(12,"Expected opening parenthesis");
 
     private final String message;
     private final int code;

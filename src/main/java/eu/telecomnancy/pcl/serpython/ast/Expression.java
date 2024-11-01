@@ -253,4 +253,44 @@ public abstract class Expression extends AbstractNode {
             return "or";
         }
     }
+
+    public static class ArrayGet extends Expression {
+        private Expression array;
+        private Expression index;
+
+        public ArrayGet(Expression array, Expression index) {
+            this.array = array;
+            this.index = index;
+        }
+
+        public Expression getArray() {
+            return array;
+        }
+
+        public Expression getIndex() {
+            return index;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ArrayGet other = (ArrayGet) obj;
+            return this.array.equals(other.array) && this.index.equals(other.index);
+        }
+
+        @Override
+        public int hashCode() {
+            return array.hashCode() * 7 + index.hashCode() * 59 + 741;
+        }
+
+        @Override
+        public String toString() {
+            return array.toString() + "[" + index.toString() + "]";
+        }
+    }
 }
