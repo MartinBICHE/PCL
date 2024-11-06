@@ -75,7 +75,7 @@ public class Lexer {
      * Tokenize the source file.
      * @return an array of tokens.
      */
-    public ArrayList<Token> tokenize() {
+    public ArrayList<Token> tokenize() throws LexerError{
         while(!isEOF()) {
             char current = getCurrent();
             if(current == ' ' || current == '\t') {
