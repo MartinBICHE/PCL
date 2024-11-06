@@ -72,6 +72,14 @@ public class Lexer {
     }
 
     /**
+     * Get the next char of the current index in the source file.
+     * @return the next char of the current index in the source file.
+     */
+    public char getNext() {
+        return source.charAt(index + 1);
+    }
+
+    /**
      * Tokenize the source file.
      * @return an array of tokens.
      */
@@ -82,6 +90,10 @@ public class Lexer {
                 skipWhitespace();
             } else if(Character.isDigit(current)) {
                 readNumber();
+            } else if (current == '"') {
+                readString();
+            } else if (current == ',' || current == '+' || current == '-' || current == '*' || current == '/' || current == '%' || current == '<' || current == '>' || current == '=' || current == '!' || current == '(' || current == ')' || current == '[' || current == ']' || current == ':') {
+                readOperator();
             }
             else if (Character.isLetter(current) || current == '_'){
               readIdentorKeyWordorNone();
@@ -98,10 +110,10 @@ public class Lexer {
      * Skip whitespaces.
      */
     public void skipWhitespace() {
-        while(getCurrent() == ' ' || getCurrent() == '\t') {
+        while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t')) {
             advance();
         }
-    }
+    }    
 
     public void readNumber() {
         String number = "";
@@ -114,7 +126,6 @@ public class Lexer {
         Token token = new IntegerToken(parsedNumber, span);
         emit(token);
     }
-
 
 
     public void readIdentorKeyWordorNone(){
@@ -215,5 +226,78 @@ public class Lexer {
         
     }
 
+    public void readOperator() {
+        char current = getCurrent();
+        Span span = new Span(line, column, 1);
     
+        if (current == '+') {
+            emit(new OperatorToken.PlusToken(span));
+        } else if(current == ',') {
+            emit(new OperatorToken.CommaToken(span));
+        } else if (current == '-') {
+            emit(new OperatorToken.MinusToken(span));
+        } else if (current == '*') {
+            emit(new OperatorToken.MultiplyToken(span));
+        } else if (current == '/' && getNext() == '/') {
+            emit(new OperatorToken.DivideToken(span));
+        } else if (current == '%') {
+            emit(new OperatorToken.ModuloToken(span));
+        } else if (current == '<') {
+            emit(new OperatorToken.LessToken(span));
+        } else if (current == '>') {
+            emit(new OperatorToken.GreaterToken(span));
+        } else if (current == '=') {
+            emit(new OperatorToken.AssignToken(span));
+        } else if (current == '!' && getNext() == '=') {
+            emit(new OperatorToken.NotEqualToken(span));
+        } else if (current == '<' && getNext() == '=') {
+            emit(new OperatorToken.LessEqualToken(span));
+        } else if (current == '>' && getNext() == '=') {    
+            emit(new OperatorToken.GreaterEqualToken(span));
+        } else if (current == '=' && getNext() == '=') {
+            emit(new OperatorToken.EqualToken(span));
+        } else if (current == '(') {
+            emit(new OperatorToken.OpeningParenthesisToken(span));
+        } else if (current == ')') {
+            emit(new OperatorToken.ClosingParenthesisToken(span));
+        } else if (current == '[') {
+            emit(new OperatorToken.OpeningBracketToken(span));
+        } else if (current == ']') {    
+            emit(new OperatorToken.ClosingBracketToken(span));
+        } else if (current == ':') {
+            emit(new OperatorToken.ColonToken(span));
+        }
+        advance();
+    }    
+
+    public void readString() {
+        StringBuilder string = new StringBuilder();
+        boolean escapeMode = false;
+        advance();
+        while (hasNext() && (escapeMode || getCurrent() != '"')) {
+            char current = getCurrent();
+            if(current == '\\') {
+                escapeMode = true;
+            } else if(escapeMode) { // recognize escape characters
+                switch (current) {
+                    case 'n':
+                        string.append('\n');
+                        break;
+                    case '"':
+                        string.append('"');
+                        break;
+                    default:
+                        break;
+                }
+                escapeMode = false;
+            } else {
+                string.append(current);
+            }
+            advance();
+        }
+        advance();
+        Span span = new Span(line, column, string.length());
+        Token token = new StringToken(string.toString(), span);
+        emit(token);
+    }
 }
