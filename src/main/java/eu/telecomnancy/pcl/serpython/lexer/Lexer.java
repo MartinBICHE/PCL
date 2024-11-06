@@ -188,7 +188,7 @@ public class Lexer {
         
     }
     
-        public void readIndent(){
+    public void readIndent() throws LexerError{
         int count = 0;
         while(hasNext() && getCurrent() == ' '){
             count ++;
