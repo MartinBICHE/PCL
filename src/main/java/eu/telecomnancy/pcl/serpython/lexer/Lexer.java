@@ -79,7 +79,7 @@ public class Lexer {
             } else if(Character.isDigit(current)) {
                 readNumber();
             }
-            else if (Character.isLetter(current) || current = '_'){
+            else if (Character.isLetter(current) || current == '_'){
               readIdentorKeyWordorNone();
             }
             else if (current == '\n'){
