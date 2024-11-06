@@ -6,7 +6,8 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OrToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
-import eu.telecomnancy.pcl.serpython.errors.LexerError.*;
+import eu.telecomnancy.pcl.serpython.errors.LexerError;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.*;
 
 
 public class Lexer {
