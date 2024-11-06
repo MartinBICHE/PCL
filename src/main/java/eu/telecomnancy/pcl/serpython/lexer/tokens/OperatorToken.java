@@ -141,6 +141,12 @@ public class OperatorToken extends Token {
         }
     }
 
+    public static class CommaToken extends OperatorToken {
+        public CommaToken(Span span) {
+            super(span);
+        }
+    }
+
     @Override
     public String toString() {
         return "OperatorToken{" +
