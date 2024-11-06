@@ -202,7 +202,7 @@ public class Lexer {
                 emit(token);
             }
 
-            while (this.indentlevel > count) {
+            while (this.indentLevel > count) {
                 this.indentLevel -= 1;
                 Token token = new EndToken(span);
                 emit(token);
