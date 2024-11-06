@@ -3,6 +3,12 @@ package eu.telecomnancy.pcl.serpython.lexer;
 import java.util.ArrayList;
 import eu.telecomnancy.pcl.serpython.common.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OrToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
+import eu.telecomnancy.pcl.serpython.errors.LexerError;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.*;
+
 
 public class Lexer {
     private final String source;
@@ -77,7 +83,7 @@ public class Lexer {
      * Tokenize the source file.
      * @return an array of tokens.
      */
-    public ArrayList<Token> tokenize() {
+    public ArrayList<Token> tokenize() throws LexerError{
         while(!isEOF()) {
             char current = getCurrent();
             if(current == ' ' || current == '\t') {
@@ -88,6 +94,13 @@ public class Lexer {
                 readString();
             } else if (current == ',' || current == '+' || current == '-' || current == '*' || current == '/' || current == '%' || current == '<' || current == '>' || current == '=' || current == '!' || current == '(' || current == ')' || current == '[' || current == ']' || current == ':') {
                 readOperator();
+            }
+            else if (Character.isLetter(current) || current == '_'){
+              readIdentorKeyWordorNone();
+            }
+            else if (current == '\n'){
+              advance();
+              readIndent();
             }
         }
         return this.tokens;
@@ -112,6 +125,105 @@ public class Lexer {
         Span span = new Span(line, column, number.length());
         Token token = new IntegerToken(parsedNumber, span);
         emit(token);
+    }
+
+
+    public void readIdentorKeyWordorNone(){
+        String ident = "";
+        
+        ident += getCurrent();
+        advance();
+            
+        while (hasNext() && Character.isLetterOrDigit(getCurrent()) || hasNext() && getCurrent()=='_') {
+            ident += getCurrent();
+            advance();
+        }
+        Span span = new Span(line, column, ident.length());
+        Token token;
+        switch (ident){
+
+            case "and":
+                token= new AndToken(span);
+                emit(token);
+                break;
+
+            case "if":
+                token = new IfToken(span);
+                emit(token);
+                break;
+
+            case "for":
+                token = new ForToken(span);
+                emit(token);
+                break;
+
+            case "None":
+                token = new NoneToken(span);
+                emit(token);
+                break;
+            
+            case "else":
+                token = new ElseToken(span);
+                emit(token);
+                break;
+
+            case "def":
+                token = new DefToken(span);
+                emit(token);
+                break;
+
+            case "print":
+                token = new PrintToken(span);
+                emit(token);
+                break;
+
+            case "in":
+                token = new InToken(span);
+                emit(token);
+                break;
+
+            case "return":
+                token = new ReturnToken(span);
+                emit(token);
+                break;
+                
+              case "or":
+                token = new OrToken(span);
+                emit(token);
+                break;
+
+            default:
+                token = new IdentToken(ident, span);
+                emit(token);
+        }
+        
+    }
+    
+    public void readIndent() throws LexerError{
+        int count = 0;
+        while(hasNext() && getCurrent() == ' '){
+            count ++;
+            advance();
+        }   
+        if (count % 4 ==0){
+            Span span = new Span(line, column, count);
+            while (this.indentLevel < count){
+                this.indentLevel += 1;
+                Token token = new BeginToken(span);
+                emit(token);
+            }
+
+            while (this.indentLevel > count) {
+                this.indentLevel -= 1;
+                Token token = new EndToken(span);
+                emit(token);
+            }
+        }
+        else{
+            throw new LexerError();
+        }
+
+        
     }
 
     public void readOperator() {
@@ -188,5 +300,4 @@ public class Lexer {
         Token token = new StringToken(string.toString(), span);
         emit(token);
     }
-
 }
