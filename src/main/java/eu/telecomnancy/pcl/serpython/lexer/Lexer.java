@@ -86,7 +86,7 @@ public class Lexer {
                 readNumber();
             } else if (current == '"') {
                 readString();
-            } else if (current == '+' || current == '-' || current == '*' || current == '/' || current == '%' || current == '<' || current == '>' || current == '=' || current == '!' || current == '(' || current == ')' || current == '[' || current == ']' || current == ':') {
+            } else if (current == ',' || current == '+' || current == '-' || current == '*' || current == '/' || current == '%' || current == '<' || current == '>' || current == '=' || current == '!' || current == '(' || current == ')' || current == '[' || current == ']' || current == ':') {
                 readOperator();
             }
         }
@@ -120,11 +120,13 @@ public class Lexer {
     
         if (current == '+') {
             emit(new OperatorToken.PlusToken(span));
+        } else if(current == ',') {
+            emit(new OperatorToken.CommaToken(span));
         } else if (current == '-') {
             emit(new OperatorToken.MinusToken(span));
         } else if (current == '*') {
             emit(new OperatorToken.MultiplyToken(span));
-        } else if (current == '/') {
+        } else if (current == '/' && getNext() == '/') {
             emit(new OperatorToken.DivideToken(span));
         } else if (current == '%') {
             emit(new OperatorToken.ModuloToken(span));
@@ -157,15 +159,33 @@ public class Lexer {
     }    
 
     public void readString() {
-        String string = "";
+        StringBuilder string = new StringBuilder();
+        boolean escapeMode = false;
         advance();
-        while (hasNext() && getCurrent() != '"') {
-            string += getCurrent();
+        while (hasNext() && (escapeMode || getCurrent() != '"')) {
+            char current = getCurrent();
+            if(current == '\\') {
+                escapeMode = true;
+            } else if(escapeMode) { // recognize escape characters
+                switch (current) {
+                    case 'n':
+                        string.append('\n');
+                        break;
+                    case '"':
+                        string.append('"');
+                        break;
+                    default:
+                        break;
+                }
+                escapeMode = false;
+            } else {
+                string.append(current);
+            }
             advance();
         }
         advance();
         Span span = new Span(line, column, string.length());
-        Token token = new StringToken(string, span);
+        Token token = new StringToken(string.toString(), span);
         emit(token);
     }
 
