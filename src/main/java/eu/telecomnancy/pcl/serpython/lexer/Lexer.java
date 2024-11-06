@@ -5,6 +5,9 @@ import eu.telecomnancy.pcl.serpython.common.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OrToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
+import eu.telecomnancy.pcl.serpython.errors.LexerError.*;
+
 
 public class Lexer {
     private final String source;
