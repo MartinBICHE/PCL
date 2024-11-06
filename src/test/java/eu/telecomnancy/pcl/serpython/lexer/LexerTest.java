@@ -18,7 +18,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleFile() {
+    public void testSimpleFile() throws LexerError {
         String source = "420";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -27,7 +27,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleFileWithWhitespaceAfter() {
+    public void testSimpleFileWithWhitespaceAfter() throws LexerError {
         String source = "420 ";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -35,7 +35,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleFileWithWhitespaceBefore() {
+    public void testSimpleFileWithWhitespaceBefore() throws LexerError {
         String source = " 420";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -43,7 +43,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleFileWithWhitespaceAfterAndBefore() {
+    public void testSimpleFileWithWhitespaceAfterAndBefore() throws LexerError {
         String source = " 420 ";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -51,7 +51,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleFileString()  {
+    public void testSimpleFileString() throws LexerError {
         String source = "\"Hello\"";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -61,7 +61,7 @@ public class LexerTest {
     }
 
     @Test 
-    public void testLessThan(){
+    public void testLessThan() throws LexerError {
         String source = "<";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -70,7 +70,7 @@ public class LexerTest {
     }
 
     @Test 
-    public void testCompareLessThan() {
+    public void testCompareLessThan() throws LexerError {
         String source = "45 < 87";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -83,7 +83,7 @@ public class LexerTest {
     }
 
     @Test 
-    public void testComma(){
+    public void testComma() throws LexerError {
         String source = ",";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -92,7 +92,7 @@ public class LexerTest {
     }
 
     @Test 
-    public void testSimpleArray(){
+    public void testSimpleArray() throws LexerError {
         String source = "[2, 3]";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -105,7 +105,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testEmptyString() {
+    public void testEmptyString() throws LexerError {
         String source = "\"\"";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -115,7 +115,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testSimpleString() {
+    public void testSimpleString() throws LexerError {
         String source = "\"Hello World\"";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -125,7 +125,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testStringNewline() {
+    public void testStringNewline() throws LexerError {
         String source = "\"Hello\\nWorld\"";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
@@ -135,7 +135,7 @@ public class LexerTest {
     }
 
     @Test
-    public void testStringEscapeChar() {
+    public void testStringEscapeChar() throws LexerError {
         String source = "\"Hello\\\"World\"";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
