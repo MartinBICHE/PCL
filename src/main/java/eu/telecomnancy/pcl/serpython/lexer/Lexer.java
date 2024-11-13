@@ -134,7 +134,7 @@ public class Lexer {
         ident += getCurrent();
         advance();
             
-        while (hasNext() && Character.isLetterOrDigit(getCurrent()) || hasNext() && getCurrent()=='_') {
+        while (!isEOF() && Character.isLetterOrDigit(getCurrent()) || hasNext() && getCurrent()=='_') {
             ident += getCurrent();
             advance();
         }
