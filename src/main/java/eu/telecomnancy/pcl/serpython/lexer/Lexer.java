@@ -100,8 +100,9 @@ public class Lexer {
               readIdentorKeyWordorNone();
             }
             else if (current == '\n'){
-              advance();
-              readIndent();
+                emit(new NewlineToken(new Span(line, column, 1)));
+                advance();
+                readIndent();
             }
         }
         return this.tokens;

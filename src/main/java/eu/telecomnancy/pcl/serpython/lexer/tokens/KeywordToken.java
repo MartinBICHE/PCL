@@ -129,6 +129,18 @@ public abstract class KeywordToken extends Token {
         }
     }
 
+    public static class NewlineToken extends KeywordToken {
+         /**
+         * Constructs a new NewlineToken with the specified span.
+         *
+         * @param span the span of the token
+         */
+        public NewlineToken(Span span) {
+            super(span);
+        }
+    }
+
+
     public String toString() {
         return "KeywordToken{" +
                 "span=" + Span.formatSpan(span) +

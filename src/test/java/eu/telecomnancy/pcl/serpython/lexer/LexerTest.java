@@ -8,6 +8,7 @@ import eu.telecomnancy.pcl.serpython.errors.LexerError;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.BooleanToken.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
 
 public class LexerTest {
 
@@ -157,6 +158,79 @@ public class LexerTest {
     }
 
     @Test
+    public void testFor() throws LexerError {
+        String source = "for";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof ForToken);
+    }
+
+    @Test
+    public void testIf() throws LexerError {
+        String source = "if";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof IfToken);
+    }
+
+    @Test
+    public void testElse() throws LexerError {
+        String source = "else";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof ElseToken);
+    }
+
+    @Test
+    public void testDef() throws LexerError {
+        String source = "def";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof DefToken);
+    }
+
+    @Test
+    public void testPrint() throws LexerError {
+        String source = "print";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof PrintToken);
+    }
+
+    @Test
+    public void testIn() throws LexerError {
+        String source = "in";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof InToken);
+    }
+
+    @Test
+    public void testOr() throws LexerError {
+        String source = "or";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof OrToken);
+    }
+
+    @Test
+    public void testReturn() throws LexerError {
+        String source = "return";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof ReturnToken);
+    }
+
+
+    @Test
     public void testNone() throws LexerError {
         String source = "None";
         Lexer lexer = new Lexer(source);
@@ -175,6 +249,15 @@ public class LexerTest {
     }
 
     @Test
+    public void testFalse() throws LexerError {
+        String source = "False";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof FalseToken);
+    }
+
+    @Test
     public void testIdent() throws LexerError {
         String source = "aNd_3";
         Lexer lexer = new Lexer(source);
@@ -189,9 +272,16 @@ public class LexerTest {
         String source = "\n    \n";
         Lexer lexer = new Lexer(source);
         ArrayList<Token> tokens = lexer.tokenize();
-        assertEquals(2,tokens.size());
-        assertTrue(tokens.get(0) instanceof BeginToken);
-        assertTrue(tokens.get(1) instanceof EndToken);
+        assertEquals(4,tokens.size());
+        assertTrue(tokens.get(1) instanceof BeginToken);
+        assertTrue(tokens.get(3) instanceof EndToken);
+    }
+
+    @Test
+    public void testIndentError() throws LexerError {
+        String source = "\n   \n";
+        Lexer lexer = new Lexer(source);
+        assertThrows(LexerError.class,  lexer::tokenize);
     }
 
 
