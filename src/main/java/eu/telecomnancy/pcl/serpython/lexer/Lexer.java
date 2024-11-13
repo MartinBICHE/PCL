@@ -8,6 +8,7 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.BooleanToken.*;
 
 
 public class Lexer {
@@ -187,8 +188,23 @@ public class Lexer {
                 emit(token);
                 break;
                 
-              case "or":
+            case "or":
                 token = new OrToken(span);
+                emit(token);
+                break;
+            
+            case "not":
+                token = new NotToken(span);
+                emit(token);
+                break;
+            
+            case "True":
+                token = new TrueToken(span);
+                emit(token);
+                break;
+
+            case "False":
+                token = new FalseToken(span);
                 emit(token);
                 break;
 
@@ -207,13 +223,13 @@ public class Lexer {
         }   
         if (count % 4 ==0){
             Span span = new Span(line, column, count);
-            while (this.indentLevel < count){
+            while (this.indentLevel < count / 4){
                 this.indentLevel += 1;
                 Token token = new BeginToken(span);
                 emit(token);
             }
 
-            while (this.indentLevel > count) {
+            while (this.indentLevel > count / 4) {
                 this.indentLevel -= 1;
                 Token token = new EndToken(span);
                 emit(token);

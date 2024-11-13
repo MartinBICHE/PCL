@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
 import java.util.*;
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.BooleanToken.*;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
 
 public class LexerTest {
 
@@ -143,4 +146,54 @@ public class LexerTest {
         assertTrue(tokens.get(0) instanceof StringToken);
         assertEquals(((StringToken) tokens.get(0)).getValue(), "Hello\"World");
     }
+
+    @Test
+    public void testAnd() throws LexerError {
+        String source = "and";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof AndToken);  
+    }
+
+    @Test
+    public void testNone() throws LexerError {
+        String source = "None";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof NoneToken);
+    }
+
+    @Test
+    public void testTrue() throws LexerError {
+        String source = "True";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof TrueToken);
+    }
+
+    @Test
+    public void testIdent() throws LexerError {
+        String source = "aNd_3";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(1,tokens.size());
+        assertTrue(tokens.get(0) instanceof IdentToken);
+        assertEquals(((IdentToken) tokens.get(0)).getName(), "aNd_3");
+    }
+
+    @Test
+    public void testBeginAndEndIndent() throws LexerError {
+        String source = "\n    \n";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(2,tokens.size());
+        assertTrue(tokens.get(0) instanceof BeginToken);
+        assertTrue(tokens.get(1) instanceof EndToken);
+    }
+
+
+
 }
