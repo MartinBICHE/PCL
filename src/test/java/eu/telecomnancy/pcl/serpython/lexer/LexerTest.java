@@ -196,4 +196,15 @@ public class LexerTest {
 
 
 
+
+    @Test 
+    public void testCompareNeq() throws LexerError {
+        String source = "1 != 2";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(3,tokens.size());
+        assertTrue(tokens.get(0) instanceof IntegerToken);
+        assertTrue(tokens.get(1) instanceof OperatorToken.NotEqualToken);
+        assertTrue(tokens.get(2) instanceof IntegerToken);
+    }
 }

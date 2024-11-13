@@ -3,7 +3,6 @@ package eu.telecomnancy.pcl.serpython.lexer;
 import java.util.ArrayList;
 import eu.telecomnancy.pcl.serpython.common.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
-import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OrToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.*;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.*;
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
@@ -255,6 +254,7 @@ public class Lexer {
         } else if (current == '*') {
             emit(new OperatorToken.MultiplyToken(span));
         } else if (current == '/' && getNext() == '/') {
+            advance();
             emit(new OperatorToken.DivideToken(span));
         } else if (current == '%') {
             emit(new OperatorToken.ModuloToken(span));
@@ -265,12 +265,16 @@ public class Lexer {
         } else if (current == '=') {
             emit(new OperatorToken.AssignToken(span));
         } else if (current == '!' && getNext() == '=') {
+            advance();
             emit(new OperatorToken.NotEqualToken(span));
         } else if (current == '<' && getNext() == '=') {
+            advance();
             emit(new OperatorToken.LessEqualToken(span));
         } else if (current == '>' && getNext() == '=') {    
+            advance();
             emit(new OperatorToken.GreaterEqualToken(span));
         } else if (current == '=' && getNext() == '=') {
+            advance();
             emit(new OperatorToken.EqualToken(span));
         } else if (current == '(') {
             emit(new OperatorToken.OpeningParenthesisToken(span));
