@@ -3,8 +3,10 @@ package eu.telecomnancy.pcl.serpython.lexer.tokens;
 import eu.telecomnancy.pcl.serpython.common.Span;
 
 /**
- * The KeywordToken class is an abstract class representing a keyword token in the lexer.
- * It extends the Token class and provides specific keyword tokens as inner classes.
+ * The KeywordToken class is an abstract class representing a keyword token in
+ * the lexer.
+ * It extends the Token class and provides specific keyword tokens as inner
+ * classes.
  */
 public abstract class KeywordToken extends Token {
     /**
@@ -28,6 +30,14 @@ public abstract class KeywordToken extends Token {
         public ForToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "FOR," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
     /**
@@ -41,6 +51,14 @@ public abstract class KeywordToken extends Token {
          */
         public IfToken(Span span) {
             super(span);
+        }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "IF," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
         }
     }
 
@@ -56,6 +74,14 @@ public abstract class KeywordToken extends Token {
         public ElseToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "ELSE," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
     /**
@@ -69,6 +95,14 @@ public abstract class KeywordToken extends Token {
          */
         public DefToken(Span span) {
             super(span);
+        }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "DEF," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
         }
     }
 
@@ -84,6 +118,13 @@ public abstract class KeywordToken extends Token {
         public PrintToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "PRINT{" +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
     /**
@@ -98,6 +139,14 @@ public abstract class KeywordToken extends Token {
         public InToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "IN," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
     /**
@@ -111,6 +160,14 @@ public abstract class KeywordToken extends Token {
          */
         public ReturnToken(Span span) {
             super(span);
+        }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "RETURN," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
         }
     }
 
@@ -127,10 +184,18 @@ public abstract class KeywordToken extends Token {
         public EofToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "EOF," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
     public static class NewlineToken extends KeywordToken {
-         /**
+        /**
          * Constructs a new NewlineToken with the specified span.
          *
          * @param span the span of the token
@@ -138,9 +203,17 @@ public abstract class KeywordToken extends Token {
         public NewlineToken(Span span) {
             super(span);
         }
+
+        @Override
+        public String toString() {
+            return "KeywordToken{" +
+                    "NEWLINE," +
+                    "span=" + Span.formatSpan(span) +
+                    '}';
+        }
     }
 
-
+    @Override
     public String toString() {
         return "KeywordToken{" +
                 "span=" + Span.formatSpan(span) +
