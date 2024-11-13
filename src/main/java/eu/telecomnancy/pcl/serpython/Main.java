@@ -11,8 +11,6 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello, world!");
-
         if (args.length < 1) {
             System.out.println("no arg!");
         }
@@ -21,9 +19,6 @@ public class Main {
 
         try {
             String fileContent = Files.readString(Paths.get(filePath));
-            System.out.println("Entrée :");
-            System.out.println(fileContent);
-
             Lexer lexer = new Lexer(fileContent);
             ArrayList<Token> tokens = lexer.tokenize();
             for (var token : tokens) {
@@ -32,8 +27,8 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         } catch (LexerError e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Syntax error");
+            e.printError();
         }
     }
 }

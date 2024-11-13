@@ -15,6 +15,8 @@ public class Lexer {
     private int index;
     private int line;
     private int column;
+    private int lastLine;
+    private int lastColumn;
     private int indentLevel;
     private ArrayList<Token> tokens;
 
@@ -23,8 +25,52 @@ public class Lexer {
         this.index = 0;
         this.line = 1;
         this.column = 1;
+        this.lastLine = 1;
+        this.lastColumn = 1;
         this.indentLevel = 0;
         this.tokens = new ArrayList<>();
+    }
+
+    /**
+     * Get the current line.
+     * @return the current line.
+     */
+    public int getLine() {
+        return line;
+    }
+
+    /**
+     * Get the current column.
+     * @return the current column.
+     */
+    public int getColumn() {
+        return column;
+    }
+
+    /**
+     * Get the last line.
+     * If there were no error, this method returns the current line.
+     * @return the last line.
+     */
+    public int getLastLine() {
+        return lastLine;
+    }
+
+    /**
+     * Get the last column.
+     * If there were no error, this method returns the current column.
+     * @return the last column.
+     */
+    public int getLastColumn() {
+        return lastColumn;
+    }
+
+    /**
+     * Get the source code.
+     * @return the source code.
+     */
+    public String getSource() {
+        return source;
     }
 
     /**
@@ -57,6 +103,8 @@ public class Lexer {
      */
     public void emit(Token token) {
         tokens.add(token);
+        this.lastLine = this.line;
+        this.lastColumn = this.column;
     }
 
     /**
@@ -87,13 +135,8 @@ public class Lexer {
         while(!isEOF()) {
             char current = getCurrent();
             if(current == '#') {
-                advance();
-                current = getCurrent();
-                while(current != '\n') {
-                    advance();
-                    current = getCurrent();
-                } 
-            }else if(current == ' ' || current == '\t') {
+                skipComment();
+            } else if(current == ' ' || current == '\t') {
                 skipWhitespace();
             } else if(Character.isDigit(current)) {
                 readNumber();
@@ -109,6 +152,9 @@ public class Lexer {
                 emit(new NewlineToken(new Span(line, column, 1)));
                 advance();
                 readIndent();
+            } else {
+                advance();
+                throw new LexerError(this, "Unexpected character '" + current + "'");
             }
         }
         return this.tokens;
@@ -121,7 +167,17 @@ public class Lexer {
         while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t')) {
             advance();
         }
-    }    
+    }
+
+    /**
+     * Skip comment.
+     */
+    public void skipComment() {
+        advance();
+        while(getCurrent() != '\n') {
+            advance();
+        }
+    }
 
     public void readNumber() {
         String number = "";
@@ -142,7 +198,7 @@ public class Lexer {
         ident += getCurrent();
         advance();
             
-        while (!isEOF() && Character.isLetterOrDigit(getCurrent()) || hasNext() && getCurrent()=='_') {
+        while (!isEOF() && Character.isLetterOrDigit(getCurrent()) || !isEOF() && getCurrent()=='_') {
             ident += getCurrent();
             advance();
         }
@@ -241,15 +297,14 @@ public class Lexer {
                 Token token = new EndToken(span);
                 emit(token);
             }
-        }
-        else{
-            throw new LexerError();
+        } else {
+            throw new LexerError(this, "Indentation error (expected multiple of 4 spaces, got " + count + " spaces)");
         }
 
         
     }
 
-    public void readOperator() {
+    public void readOperator() throws LexerError {
         char current = getCurrent();
         Span span = new Span(line, column, 1);
     
@@ -298,11 +353,14 @@ public class Lexer {
         advance();
     }    
 
-    public void readString() {
+    public void readString() throws LexerError {
         StringBuilder string = new StringBuilder();
         boolean escapeMode = false;
         advance();
-        while (hasNext() && (escapeMode || getCurrent() != '"')) {
+        while (escapeMode || getCurrent() != '"') {
+            if(!hasNext()) {
+                throw new LexerError(this, "Unexpected end of file");
+            }
             char current = getCurrent();
             if(current == '\\') {
                 escapeMode = true;

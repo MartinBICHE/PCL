@@ -3,10 +3,36 @@ package eu.telecomnancy.pcl.serpython.errors;
 import eu.telecomnancy.pcl.serpython.lexer.Lexer;
 
 public class LexerError extends Exception {
-    public LexerError() {}
+    private Lexer lexer;
+    private String message;
 
-    // TODO: improve that
-    public LexerError(String message) {
-         super(message);
+    public LexerError(Lexer lexer, String message) {
+        super(message);
+        this.message = message;
+        this.lexer = lexer;
+    }
+
+    private String getErrorLine() {
+        String source = this.lexer.getSource();
+        int line = this.lexer.getLastLine();
+        String[] lines = source.split("\n");
+        return lines[line - 1];
+    }
+
+    public void printError() {
+        String errorLine = getErrorLine();
+        int span = 0;
+        if(this.lexer.getLastLine() == this.lexer.getLine()) {
+            span = this.lexer.getColumn() - this.lexer.getLastColumn() - 1;
+        } else {
+            span = errorLine.length() - this.lexer.getLastColumn() + 1;
+        }
+        String line = Integer.toString(this.lexer.getLastLine());
+        System.out.println(line + " | " + errorLine);
+        for(int i = 0 ; i < line.length() + 2 + this.lexer.getLastColumn() ; i += 1) { System.out.print(" "); }
+        for(int i = 0 ; i < span ; i += 1) { System.out.print("^"); }
+        System.out.println();
+        for(int i = 0 ; i < line.length() + 2 + this.lexer.getLastColumn() - this.message.length() / 2 ; i += 1) { System.out.print(" "); }
+        System.out.println(this.message);
     }
 }
