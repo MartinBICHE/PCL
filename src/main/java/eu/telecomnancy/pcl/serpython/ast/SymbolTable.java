@@ -46,14 +46,24 @@ public class SymbolTable {
 
     private HashMap<String, SymbolTable.Entry> table;
     private SymbolTable parent;
+    private int scopeLevel;
 
-    public SymbolTable(SymbolTable parent) {
+    public SymbolTable(SymbolTable parent, int scopeLevel) {
         this.table = new HashMap<String, SymbolTable.Entry>();
         this.parent = parent;
+        this.scopeLevel = scopeLevel;
     }
 
     public SymbolTable() {
-        this(null);
+        this(null, 0);
+    }
+
+    public int getScopeLevel() {
+        return scopeLevel;
+    }
+
+    public void setScopeLevel(int scopeLevel) {
+        this.scopeLevel = scopeLevel;
     }
 
     /**
@@ -81,27 +91,50 @@ public class SymbolTable {
         this.addSymbol(name, entry);
     }
 
+    /**
+     * Add a new function to the symbol table, with the specified type.
+     * @param name
+     * @param type
+     * @throws AlreadyExistError
+     */
     public void addFunction(String name, Type type) throws AlreadyExistError {
         Entry entry = new Function(name, type);
         this.addSymbol(name, entry);
     }
 
     /**
-     * Add a new variable to the symbol table. The symbol's type is not known yet.
+     * Declare a new variable in the symbol table. The symbol's type is not known yet.
      * @param name
      */
     public void declareVariable(String name) throws AlreadyExistError {
         this.addVariable(name, null);
     }
 
+    /**
+     * Declare a new function in the symbol table. The full function type is not known yet.
+     * @param name
+     * @throws AlreadyExistError
+     */
     public void declareFunction(String name) throws AlreadyExistError {
         this.addFunction(name, null);
     }
 
+    /**
+     * Check if the given symbol is declared locally.
+     * @param name
+     * @return
+     */
     public boolean existLocally(String name) {
         return this.table.getOrDefault(name, null) != null;
     }
 
+    /**
+     * Perform a local lookup for the given symbol.
+     * If the symbol is not found, there is NO recursive lookup.
+     * @param name
+     * @return
+     * @throws LookupError
+     */
     public SymbolTable.Entry localLookup(String name) throws LookupError {
         Entry result = this.table.getOrDefault(name, null);
         if(result == null) {

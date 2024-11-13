@@ -1,20 +1,13 @@
 package eu.telecomnancy.pcl.serpython.types;
 
-public abstract class Type {
-    @Override
-    public abstract boolean equals(Object obj);
-
+public abstract class Type implements CompatibleType {
     public static class Integer extends Type {
         public Integer() {
 
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return switch(obj) {
-                case Type.Integer i -> true;
-                default -> false;
-            };
+        public boolean isCompatibleWith(Type type) {
+            return type instanceof Integer;
         }
     }
 
@@ -23,12 +16,8 @@ public abstract class Type {
 
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return switch(obj) {
-                case Type.String s -> true;
-                default -> false;
-            };
+        public boolean isCompatibleWith(Type type) {
+            return type instanceof String;
         }
     }
 
@@ -37,40 +26,73 @@ public abstract class Type {
 
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return switch(obj) {
-                case Type.Bool b -> true;
-                default -> false;
-            };
+        public boolean isCompatibleWith(Type type) {
+            return type instanceof Bool;
         }
     }
 
-    public static class Array extends Type {
-        public Array() {
+    public static abstract class Array extends Type {
+        
+    }
 
+    public static class AnyArray extends Array {
+        public AnyArray() {
+            
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return switch(obj) {
-                case Type.Array a -> true;
-                default -> false;
-            };
+        public boolean isCompatibleWith(Type type) {
+            return type instanceof AnyArray;
         }
     }
 
-    public static class Function extends Type {
-        public Function() {
+    public static class ConcreteArray extends Array {
+        private int size;
 
+        public ConcreteArray(int size) {
+            this.size = size;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return switch(obj) {
-                case Type.Function f -> true;
-                default -> false;
-            };
+        public int getSize() {
+            return size;
+        }
+
+        public boolean isCompatibleWith(Type type) {
+            if(type instanceof ConcreteArray) {
+                return ((ConcreteArray) type).getSize() == this.size;
+            } else if(type instanceof AnyArray) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static abstract class Function extends Type {
+
+    }
+
+    public static class ConcreteFunction extends Function {
+        private Type returnType;
+        private Type[] args;
+
+        public ConcreteFunction(Type returnType, Type[] args) {
+            this.returnType = returnType;
+            this.args = args;
+        }
+
+        public ConcreteFunction(int arity) {
+            this(null, new Type[arity]);
+        }
+
+        public Type getReturnType() {
+            return returnType;
+        }
+
+        public Type[] getArgs() {
+            return args;
+        }
+
+        public boolean isCompatibleWith(Type type) {
+            return false;
         }
     }
 }
