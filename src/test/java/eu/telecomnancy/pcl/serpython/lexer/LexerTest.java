@@ -404,4 +404,116 @@ public class LexerTest {
         assertEquals(1, tokens.size());
         assertTrue(tokens.get(0) instanceof OperatorToken.ColonToken);
     }
+
+    @Test
+    public void testEmptyFunctionDef() throws LexerError {
+        String source = "def f():\n    \n";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(9, tokens.size());
+        assertTrue(tokens.get(0) instanceof KeywordToken.DefToken);
+        assertTrue(tokens.get(1) instanceof IdentToken);
+        assertTrue(tokens.get(2) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(3) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(4) instanceof OperatorToken.ColonToken);
+        assertTrue(tokens.get(5) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(6) instanceof IndentToken.BeginToken);
+        assertTrue(tokens.get(7) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(8) instanceof IndentToken.EndToken);
+    }
+
+    @Test
+    public void testFunctionWithOneArg() throws LexerError {
+        String source = "def f(x):\n    return x\n";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(12, tokens.size());
+        assertTrue(tokens.get(0) instanceof KeywordToken.DefToken);
+        assertTrue(tokens.get(1) instanceof IdentToken);
+        assertTrue(tokens.get(2) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(3) instanceof IdentToken);
+        assertTrue(tokens.get(4) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(5) instanceof OperatorToken.ColonToken);
+        assertTrue(tokens.get(6) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(7) instanceof IndentToken.BeginToken);
+        assertTrue(tokens.get(8) instanceof KeywordToken.ReturnToken);
+        assertTrue(tokens.get(10) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(11) instanceof IndentToken.EndToken);
+    }
+
+    @Test
+    public void testOneVarAndTwoFunctions() throws LexerError {
+        String source = "x =1\n\ndef f(x):\n    return x\n\ndef g(x):\n    return x>= 3\n";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(32, tokens.size());
+        assertTrue(tokens.get(0) instanceof IdentToken);
+        assertTrue(tokens.get(1) instanceof OperatorToken.AssignToken);
+        assertTrue(tokens.get(2) instanceof IntegerToken);
+        assertTrue(tokens.get(3) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(4) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(5) instanceof KeywordToken.DefToken);
+        assertTrue(tokens.get(6) instanceof IdentToken);
+        assertTrue(tokens.get(7) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(8) instanceof IdentToken);
+        assertTrue(tokens.get(9) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(10) instanceof OperatorToken.ColonToken);
+        assertTrue(tokens.get(11) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(12) instanceof IndentToken.BeginToken);
+        assertTrue(tokens.get(13) instanceof KeywordToken.ReturnToken);
+        assertTrue(tokens.get(14) instanceof IdentToken);
+        assertTrue(tokens.get(15) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(16) instanceof IndentToken.EndToken);
+        assertTrue(tokens.get(17) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(18) instanceof KeywordToken.DefToken);
+        assertTrue(tokens.get(19) instanceof IdentToken);
+        assertTrue(tokens.get(20) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(21) instanceof IdentToken);
+        assertTrue(tokens.get(22) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(23) instanceof OperatorToken.ColonToken);
+        assertTrue(tokens.get(24) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(25) instanceof IndentToken.BeginToken);
+        assertTrue(tokens.get(26) instanceof KeywordToken.ReturnToken);
+        assertTrue(tokens.get(27) instanceof IdentToken);
+        assertTrue(tokens.get(28) instanceof OperatorToken.GreaterEqualToken);
+        assertTrue(tokens.get(29) instanceof IntegerToken);
+        assertTrue(tokens.get(30) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(31) instanceof IndentToken.EndToken);
+    }
+
+    @Test
+    public void testOneIf() throws LexerError {
+        String source = "eighty = 80\n\nif not eighty//3 >= 1//0:\n    print(42)\n    print(\"Hello\")\n";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(28, tokens.size());
+        assertTrue(tokens.get(0) instanceof IdentToken);
+        assertTrue(tokens.get(1) instanceof OperatorToken.AssignToken);
+        assertTrue(tokens.get(2) instanceof IntegerToken);
+        assertTrue(tokens.get(3) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(4) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(5) instanceof KeywordToken.IfToken);
+        assertTrue(tokens.get(6) instanceof OperatorToken.NotToken);
+        assertTrue(tokens.get(7) instanceof IdentToken);
+        assertTrue(tokens.get(8) instanceof OperatorToken.DivideToken);
+        assertTrue(tokens.get(9) instanceof IntegerToken);
+        assertTrue(tokens.get(10) instanceof OperatorToken.GreaterEqualToken);
+        assertTrue(tokens.get(11) instanceof IntegerToken);
+        assertTrue(tokens.get(12) instanceof OperatorToken.DivideToken);
+        assertTrue(tokens.get(13) instanceof IntegerToken);
+        assertTrue(tokens.get(14) instanceof OperatorToken.ColonToken);
+        assertTrue(tokens.get(15) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(16) instanceof IndentToken.BeginToken);
+        assertTrue(tokens.get(17) instanceof KeywordToken.PrintToken);
+        assertTrue(tokens.get(18) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(19) instanceof IntegerToken);
+        assertTrue(tokens.get(20) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(21) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(22) instanceof KeywordToken.PrintToken);
+        assertTrue(tokens.get(23) instanceof OperatorToken.OpeningParenthesisToken);
+        assertTrue(tokens.get(24) instanceof StringToken);
+        assertTrue(tokens.get(25) instanceof OperatorToken.ClosingParenthesisToken);
+        assertTrue(tokens.get(26) instanceof KeywordToken.NewlineToken);
+        assertTrue(tokens.get(27) instanceof IndentToken.EndToken);
+    }
 }
