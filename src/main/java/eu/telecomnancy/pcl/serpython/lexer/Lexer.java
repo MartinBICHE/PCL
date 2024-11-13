@@ -39,7 +39,7 @@ public class Lexer {
      * @return true if there is a next token in the source file, false otherwise.
      */
     public boolean hasNext() {
-        return index < source.length();
+        return index + 1 < source.length();
     }
 
     /**
@@ -116,7 +116,7 @@ public class Lexer {
 
     public void readNumber() {
         String number = "";
-        while (hasNext() && Character.isDigit(getCurrent())) {
+        while (!isEOF() && Character.isDigit(getCurrent())) {
             number += getCurrent();
             advance();
         }
@@ -229,7 +229,24 @@ public class Lexer {
         char current = getCurrent();
         Span span = new Span(line, column, 1);
     
-        if (current == '+') {
+        if (current == '!' && hasNext() && getNext() == '=') {
+            advance();
+            emit(new OperatorToken.NotEqualToken(span));
+        } else if (current == '/' && hasNext()&& getNext() == '/') {
+            advance();
+            emit(new OperatorToken.DivideToken(span));
+        } else if (current == '%') {
+            emit(new OperatorToken.ModuloToken(span));
+        } else if (current == '<' && hasNext() && getNext() == '=') {
+            advance();
+            emit(new OperatorToken.LessEqualToken(span));
+        } else if (current == '>' && hasNext() && getNext() == '=') {    
+            advance();
+            emit(new OperatorToken.GreaterEqualToken(span));
+        } else if (current == '=' && hasNext() && getNext() == '=') {
+            advance();
+            emit(new OperatorToken.EqualToken(span)); 
+        } else if (current == '+') {
             emit(new OperatorToken.PlusToken(span));
         } else if(current == ',') {
             emit(new OperatorToken.CommaToken(span));
@@ -237,29 +254,12 @@ public class Lexer {
             emit(new OperatorToken.MinusToken(span));
         } else if (current == '*') {
             emit(new OperatorToken.MultiplyToken(span));
-        } else if (current == '/' && getNext() == '/') {
-            advance();
-            emit(new OperatorToken.DivideToken(span));
-        } else if (current == '%') {
-            emit(new OperatorToken.ModuloToken(span));
         } else if (current == '<') {
             emit(new OperatorToken.LessToken(span));
         } else if (current == '>') {
             emit(new OperatorToken.GreaterToken(span));
         } else if (current == '=') {
             emit(new OperatorToken.AssignToken(span));
-        } else if (current == '!' && getNext() == '=') {
-            advance();
-            emit(new OperatorToken.NotEqualToken(span));
-        } else if (current == '<' && getNext() == '=') {
-            advance();
-            emit(new OperatorToken.LessEqualToken(span));
-        } else if (current == '>' && getNext() == '=') {    
-            advance();
-            emit(new OperatorToken.GreaterEqualToken(span));
-        } else if (current == '=' && getNext() == '=') {
-            advance();
-            emit(new OperatorToken.EqualToken(span));
         } else if (current == '(') {
             emit(new OperatorToken.OpeningParenthesisToken(span));
         } else if (current == ')') {
