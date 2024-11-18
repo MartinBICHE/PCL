@@ -6,8 +6,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
+import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.lexer.Lexer;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
+import eu.telecomnancy.pcl.serpython.parser.Parser;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,18 +19,31 @@ public class Main {
 
         String filePath = args[0]; 
 
+        String fileContent = null;
         try {
-            String fileContent = Files.readString(Paths.get(filePath));
+            fileContent = Files.readString(Paths.get(filePath));
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
+        }
+        
+        ArrayList<Token> tokens = null;
+
+        try {
             Lexer lexer = new Lexer(fileContent);
-            ArrayList<Token> tokens = lexer.tokenize();
+            tokens = lexer.tokenize();
             for (var token : tokens) {
                 System.out.println(token.toString()+" ");
             }
-        } catch (IOException e) {
-            System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         } catch (LexerError e) {
             System.out.println("Syntax error");
             e.printError();
+        }
+
+        try {
+            Parser parser = new Parser(fileContent, tokens);
+            parser.parse();
+        } catch (ParserError e) {
+            System.out.println("Parsing error");
         }
     }
 }

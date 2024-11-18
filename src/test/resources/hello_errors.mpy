@@ -1,5 +1,1 @@
-a = 5 # this is a comment
-def hello(name):
-    return "Hello, 
-
-print |hello(name))
+a *  # this is a comment

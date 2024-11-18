@@ -111,12 +111,13 @@ public class Lexer {
      * Go to the next character in the source file.
      */
     public void advance() {
-        this.index += 1;
-        this.column += 1;
         if (!isEOF() && getCurrent() == '\n') {
             this.line += 1;
             this.column = 1;
+        } else {
+            this.column += 1;
         }
+        this.index += 1;
     }
 
     /**
@@ -147,8 +148,7 @@ public class Lexer {
             }
             else if (Character.isLetter(current) || current == '_'){
               readIdentorKeyWordorNone();
-            }
-            else if (current == '\n'){
+            } else if (current == '\n') {
                 emit(new NewlineToken(new Span(line, column, 1)));
                 advance();
                 readIndent();

@@ -19,7 +19,7 @@ public class LexerError extends Exception {
         return lines[line - 1];
     }
 
-    public void printError() {
+    private int getErrorSpan() {
         String errorLine = getErrorLine();
         int span = 0;
         if(this.lexer.getLastLine() == this.lexer.getLine()) {
@@ -27,6 +27,12 @@ public class LexerError extends Exception {
         } else {
             span = errorLine.length() - this.lexer.getLastColumn() + 1;
         }
+        return span;
+    }
+
+    public void printError() {
+        String errorLine = getErrorLine();
+        int span = getErrorSpan();
         String line = Integer.toString(this.lexer.getLastLine());
         System.out.println(line + " | " + errorLine);
         for(int i = 0 ; i < line.length() + 2 + this.lexer.getLastColumn() ; i += 1) { System.out.print(" "); }

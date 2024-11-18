@@ -6,19 +6,39 @@ import eu.telecomnancy.pcl.serpython.common.Span;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
+import eu.telecomnancy.pcl.serpython.ast.Expression;
 
 public class Parser {
     private ArrayList<Token> tokens;
     private int index;
+    private final String source;
+
+    /**
+     * Constructs a Parser object with the given list of tokens and the source code.
+     * 
+     * @param source the source code of the input
+     * @param tokens the list of tokens to be parsed
+     */
+    public Parser(String source, ArrayList<Token> tokens) {
+        this.tokens = tokens;
+        this.index = 0;
+        this.source = source;
+    }
 
     /**
      * Constructs a Parser object with the given list of tokens.
-     * 
-     * @param tokens the list of tokens to be parsed
+     * @param tokens
      */
     public Parser(ArrayList<Token> tokens) {
-        this.tokens = tokens;
-        this.index = 0;
+        this(null, tokens);
+    }
+
+    /**
+     * Get the source code.
+     * @return the source code.
+     */
+    public String getSource() {
+        return source;
     }
 
     /**
@@ -65,11 +85,9 @@ public class Parser {
     /**
      * Parses the list of tokens.
      */
-    public void parse() {
-        while (index < tokens.size()) {
-            System.out.println(tokens.get(index));
-            index++;
-        }
+    public void parse() throws ParserError {
+        Expression expr = ExprParser.parseExpr(this);
+        System.out.println(expr);
     }
 
     /**
