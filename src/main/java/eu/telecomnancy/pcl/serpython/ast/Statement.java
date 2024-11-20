@@ -1,7 +1,5 @@
 package eu.telecomnancy.pcl.serpython.ast;
 
-import java.util.ArrayList;
-
 import eu.telecomnancy.pcl.serpython.ast.Expression.ArrayGet;
 
 public abstract class Statement {
@@ -67,8 +65,45 @@ public abstract class Statement {
             this.expression = expression;
         }
 
+        @Override
         public String toString() {
             return expression.toString();
+        }
+    }
+
+    public static class IfStatement extends Statement {
+        private Expression expression;
+        private Block ifBlock;
+        private Block elseBlock;
+
+        public IfStatement(Expression expression, Block ifBlock, Block elseBlock){
+            this.expression = expression;
+            this.ifBlock= ifBlock;
+            this.elseBlock = elseBlock;
+        }
+
+        @Override
+        public String toString() {
+            return "if" + expression.toString() + ":" + ifBlock.toString() + "else" + elseBlock.toString();
+        }
+
+
+    }
+
+    public static class ForStatement extends Statement {
+        private Expression expression;
+        private Identifier ident;
+        private Block block;
+
+        public ForStatement (Expression expression,Identifier ident,Block block) {
+            this.expression=expression;
+            this.ident = ident;
+            this.block =block;
+        }
+
+        @Override
+        public String toString(){
+            return "for" +  ident.toString() + "in" + expression.toString() + ":" + block.toString();
         }
     }
 

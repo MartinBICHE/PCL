@@ -3,6 +3,8 @@ package eu.telecomnancy.pcl.serpython.parser;
 import eu.telecomnancy.pcl.serpython.ast.Statement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.AssignmentStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.ExpressionStatement;
+import eu.telecomnancy.pcl.serpython.ast.Statement.ForStatement;
+import eu.telecomnancy.pcl.serpython.ast.Statement.IfStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.IndexedAssignementStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.PrintStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.ReturnStatement;
@@ -10,10 +12,15 @@ import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.BeginToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.EndToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ElseToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ForToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.IfToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.InToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.NewlineToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.PrintToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ReturnToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.AssignToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ColonToken;
 import eu.telecomnancy.pcl.serpython.parser.ExprParser;
 
 import java.util.ArrayList;
@@ -88,6 +95,61 @@ public class StmtParser {
     }
 
     public static Statement parseStatement(Parser parser) throws ParserError {
-        return null;
+        if (parser.peek() instanceof ForToken){
+            return parseForStatement(parser);
+        }
+        else if (parser.peek() instanceof IfToken) {
+            return parseIfStatement(parser);
+        }
+        else{
+            Statement state = parseSimpleStatement(parser);
+            if (!(parser.peek() instanceof NewlineToken)){
+                throw new ParserError(ParserErrorKind.ExpectedNewLine);
+            }
+            parser.consume();
+            return state;
+        }
+    }
+
+    public static ForStatement parseForStatement(Parser parser) throws ParserError {
+        if (parser.peek() instanceof ForToken) {
+            parser.consume();
+            Identifier ident = AtomParser.parseIdentifier(parser);
+            if (!(parser.peek() instanceof InToken)) {
+                throw new ParserError(ParserErrorKind.ExpectedInToken);
+            }
+            parser.consume();
+            Expression expre = ExprParser.parseExpr(parser);
+            if (!(parser.peek() instanceof ColonToken)){
+                throw new ParserError(ParserErrorKind.ExpectedColonToken);
+            }
+            parser.consume();
+            Block block = parseBlock(parser);
+            return new ForStatement(expre, ident, block);
+        }
+        throw new ParserError(ParserErrorKind.ExpectedForToken);
+    }
+
+    public static IfStatement parseIfStatement(Parser parser) throws ParserError {
+        if (parser.peek() instanceof IfToken){
+            parser.consume();
+            Expression expre = AtomParser.parseIdentifier(parser);
+            if (!(parser.peek() instanceof ColonToken)) {
+                throw new ParserError(ParserErrorKind.ExpectedColonToken);
+            }
+            parser.consume();
+            Block ifblock = parseBlock(parser);
+            if (parser.peek() instanceof ElseToken){
+                parser.consume();
+                if (!(parser.peek() instanceof ColonToken)) {
+                    throw new ParserError(ParserErrorKind.ExpectedColonToken);
+                }
+                parser.consume();
+                Block elseblock = parseBlock(parser);
+                return new IfStatement(expre, ifblock, elseblock);
+            }
+            return new IfStatement(expre, ifblock, null);
+        }
+        throw new ParserError(ParserErrorKind.ExpectedIfToken);
     }
 }
