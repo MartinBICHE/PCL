@@ -10,6 +10,7 @@ import eu.telecomnancy.pcl.serpython.ast.Statement.PrintStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.ReturnStatement;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.IdentToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.BeginToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IndentToken.EndToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ElseToken;
@@ -20,14 +21,18 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.NewlineToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.PrintToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ReturnToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.AssignToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ClosingBracketToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ColonToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.CommaToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OpeningBracketToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.DefToken;
 import eu.telecomnancy.pcl.serpython.parser.ExprParser;
 
 import java.util.ArrayList;
-
 import eu.telecomnancy.pcl.serpython.ast.Block;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
 import eu.telecomnancy.pcl.serpython.ast.Expression.ArrayGet;
+import eu.telecomnancy.pcl.serpython.ast.Function;
 import eu.telecomnancy.pcl.serpython.ast.Identifier;
 
 public class StmtParser {
@@ -152,4 +157,56 @@ public class StmtParser {
         }
         throw new ParserError(ParserErrorKind.ExpectedIfToken);
     }
+
+
+
+    public static ArrayList<Identifier> parseArguments(Parser parser) throws ParserError{
+        if (!(parser.peek() instanceof IdentToken)){
+            return new ArrayList<Identifier>();
+        }
+
+        ArrayList<Identifier> arguments = new ArrayList<Identifier>();
+        arguments.add(AtomParser.parseIdentifier(parser));
+        parser.consume();
+
+        while (parser.peek() instanceof CommaToken){
+            parser.consume();
+            arguments.add(AtomParser.parseIdentifier(parser));
+            parser.consume();
+        }
+        return arguments;
+
+    }
+
+    public static Function parseFunction(Parser parser) throws ParserError{
+        if(!(parser.peek() instanceof DefToken)){
+            throw new ParserError(ParserErrorKind.ExpectedDefToken);
+        }
+        parser.consume();
+        if(!(parser.peek() instanceof IdentToken)){
+            throw new ParserError(ParserErrorKind.ExpectedIdentifier);
+        }
+        Identifier name = AtomParser.parseIdentifier(parser);
+        parser.consume();
+        if(!(parser.peek() instanceof OpeningBracketToken)){
+            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis);
+        }
+        parser.consume();
+        ArrayList<Identifier> arguments = parseArguments(parser);
+        if(!(parser.peek() instanceof ClosingBracketToken)){
+            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis);
+        }
+        parser.consume();
+        if(!(parser.peek() instanceof ColonToken)){
+            throw new ParserError(ParserErrorKind.ExpectedColonToken);
+        }
+        parser.consume();
+        Block block = parseBlock(parser);
+
+        return new Function(name, arguments, block);
+    }
+
+    
+
 }
+
