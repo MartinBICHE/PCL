@@ -104,10 +104,22 @@ public abstract class Statement {
         private Block ifBlock;
         private Block elseBlock;
 
-        public IfStatement(Expression expression, Block ifBlock, Block elseBlock){
+        public IfStatement(Expression expression, Block ifBlock, Block elseBlock) {
             this.expression = expression;
-            this.ifBlock= ifBlock;
+            this.ifBlock = ifBlock;
             this.elseBlock = elseBlock;
+        }
+
+        public Expression getExpression() {
+            return expression;
+        }
+
+        public Block getIfBlock() {
+            return ifBlock;
+        }
+
+        public Block getElseBlock() {
+            return elseBlock;
         }
 
         @Override
@@ -123,10 +135,22 @@ public abstract class Statement {
         private Identifier ident;
         private Block block;
 
-        public ForStatement (Expression expression,Identifier ident,Block block) {
-            this.expression=expression;
+        public ForStatement (Expression expression, Identifier ident, Block block) {
+            this.expression = expression;
             this.ident = ident;
-            this.block =block;
+            this.block = block;
+        }
+
+        public Expression getExpression() {
+            return expression;
+        }
+
+        public Identifier getIdent() {
+            return ident;
+        }
+
+        public Block getBlock() {
+            return block;
         }
 
         @Override

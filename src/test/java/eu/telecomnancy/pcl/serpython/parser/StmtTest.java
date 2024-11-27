@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
+import eu.telecomnancy.pcl.serpython.ast.Block;
+import eu.telecomnancy.pcl.serpython.ast.BooleanLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
+import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
 import eu.telecomnancy.pcl.serpython.ast.NumberLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Identifier;
 import eu.telecomnancy.pcl.serpython.ast.Statement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.ReturnStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.PrintStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.AssignmentStatement;
+import eu.telecomnancy.pcl.serpython.ast.Statement.ForStatement;
+import eu.telecomnancy.pcl.serpython.ast.Statement.IfStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.IndexedAssignementStatement;
 
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
@@ -199,4 +204,117 @@ public class StmtTest {
         assertEquals(right, new NumberLitteral(69));
     }
 
+    @Test
+    public void testSimpleIfStatementNoElse() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new KeywordToken.IfToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new StringToken("Hello", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        Parser parser = new Parser(tokens);
+        Statement out = StmtParser.parseIfStatement(parser);
+        assertNotNull(out);
+        assertTrue(out instanceof IfStatement);
+        IfStatement ifStmt = (IfStatement)out;
+        assertTrue(ifStmt.getExpression() instanceof BooleanLitteral);
+        assertEquals(((BooleanLitteral)ifStmt.getExpression()).getValue(), true);
+        assertNotNull(ifStmt.getIfBlock());
+        assertNull(ifStmt.getElseBlock());
+    }
+
+    @Test
+    public void testSimpleIfStatementWithElse() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new KeywordToken.IfToken(null));
+        tokens.add(new BooleanToken.TrueToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new StringToken("Hello", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        tokens.add(new KeywordToken.ElseToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new StringToken("Bye", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        Parser parser = new Parser(tokens);
+        Statement out = StmtParser.parseIfStatement(parser);
+        assertNotNull(out);
+        assertTrue(out instanceof IfStatement);
+        IfStatement ifStmt = (IfStatement)out;
+        assertTrue(ifStmt.getExpression() instanceof BooleanLitteral);
+        assertEquals(((BooleanLitteral)ifStmt.getExpression()).getValue(), true);
+        assertNotNull(ifStmt.getIfBlock());
+        assertNotNull(ifStmt.getElseBlock());
+    }
+
+    @Test
+    public void testSimpleForStatement() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new KeywordToken.ForToken(null));
+        tokens.add(new IdentToken("i", null));
+        tokens.add(new KeywordToken.InToken(null));
+        tokens.add(new IdentToken("range", null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IdentToken("i", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        Parser parser = new Parser(tokens);
+        Statement out = StmtParser.parseForStatement(parser);
+        assertNotNull(out);
+        assertTrue(out instanceof ForStatement);
+        ForStatement forStmt = (ForStatement)out;
+        assertTrue(forStmt.getExpression() instanceof FunctionCall);
+        assertEquals(forStmt.getIdent().getName(), "i");
+        assertNotNull(forStmt.getBlock());
+    }
+
+    @Test
+    public void testWrongForStatement() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new KeywordToken.ForToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new KeywordToken.InToken(null));
+        tokens.add(new IdentToken("range", null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IntegerToken(42, null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IdentToken("i", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        Parser parser = new Parser(tokens);
+        assertThrows(ParserError.class, () -> {
+            StmtParser.parseForStatement(parser);
+        });
+    }
 }
