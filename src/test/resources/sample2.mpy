@@ -1,0 +1,23 @@
+# Fonction récursive pour calculer le factoriel de n
+def factorial(n):
+    if n == 0 or n == 1:  # Cas de base : 0! = 1 et 1! = 1
+        return 1
+    else:
+        return n * factorial(n - 1)  # Appel récursif
+
+# Fonction récursive pour calculer la somme des entiers de 1 à n
+def sum_recursive(n):
+    if n == 1:  # Cas de base : la somme de 1 à 1 est simplement 1
+        return 1
+    else:
+        return n + sum_recursive(n - 1)  # Appel récursif
+
+# Tester les deux fonctions
+if __name__ == "__main__":
+    # Calcul du factoriel de 5
+    fact = factorial(5)
+    print("Factorial of 5 is:"+fact)
+    
+    # Calcul de la somme des entiers de 1 à 5
+    total_sum = sum_recursive(5)
+    print("Sum of numbers from 1 to 5 is:"+total_sum)

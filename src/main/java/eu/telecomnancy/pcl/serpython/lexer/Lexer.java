@@ -86,7 +86,14 @@ public class Lexer {
     public ArrayList<Token> tokenize() throws LexerError{
         while(!isEOF()) {
             char current = getCurrent();
-            if(current == ' ' || current == '\t') {
+            if(current == '#') {
+                advance();
+                current = getCurrent();
+                while(current != '\n') {
+                    advance();
+                    current = getCurrent();
+                } 
+            }else if(current == ' ' || current == '\t' || current == '\r') {
                 skipWhitespace();
             } else if(Character.isDigit(current)) {
                 readNumber();
@@ -111,7 +118,7 @@ public class Lexer {
      * Skip whitespaces.
      */
     public void skipWhitespace() {
-        while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t')) {
+        while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t' || getCurrent() == '\r')) {
             advance();
         }
     }    
@@ -242,7 +249,7 @@ public class Lexer {
         
     }
 
-    public void readOperator() {
+    public void readOperator() throws LexerError {
         char current = getCurrent();
         Span span = new Span(line, column, 1);
     
@@ -287,6 +294,8 @@ public class Lexer {
             emit(new OperatorToken.ClosingBracketToken(span));
         } else if (current == ':') {
             emit(new OperatorToken.ColonToken(span));
+        } else {
+            throw new LexerError("Unknown syntax");
         }
         advance();
     }    

@@ -1,0 +1,15 @@
+a = 10
+b = 20
+c = a + b
+
+for i in range(5):
+    print ("Hello, World! "+i)
+
+d = c * 2
+e = d - 5
+
+for i in range(3):
+    print("Calculating: "+i )
+
+f = e // 2
+print("Result: "+f)

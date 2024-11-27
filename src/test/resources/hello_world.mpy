@@ -1,0 +1,9 @@
+def hello(name):
+    return "Hello, "+name+"!"
+
+print (hello(name))
+if a == 5:
+    c = 3
+    for elem in loist:
+        print(elem)
+        elem = elem * 56 + 3

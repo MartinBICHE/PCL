@@ -15,7 +15,15 @@ public enum ParserErrorKind {
     ExpectedExpression(9,"Expected an expression"),
     ExpectedClosingBracket(10,"Expected closing bracket"),
     ExpectedArray(11,"Expected an array"),
-    ExpectedOpeningParenthesis(12,"Expected opening parenthesis");
+    ExpectedOpeningParenthesis(12,"Expected opening parenthesis"),
+    CannotAssignToExpression(13,"Cannot assign to left value expression"),
+    ExpectedBegin(14,"Expected begin token"),
+    ExpectedNewLine(15,"Expected newline token"),
+    ExpectedInToken(16,"Expected in token"),
+    ExpectedColonToken(17,"Expected colon token"),
+    ExpectedForToken(18,"Expected for token"),
+    ExpectedIfToken(19,"Expected if token"),
+    ExpectedDefToken(20,"Expected def token");
 
     private final String message;
     private final int code;
