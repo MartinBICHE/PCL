@@ -10,6 +10,10 @@ public abstract class Statement {
             this.expression = expression;
         }
 
+        public Expression getExpression() {
+            return expression;
+        }
+
         @Override
         public String toString() {
             return "return " + expression.toString(); 
@@ -21,6 +25,10 @@ public abstract class Statement {
 
         public PrintStatement(Expression expression) {
             this.expression = expression;
+        }
+
+        public Expression getExpression() {
+            return expression;
         }
 
         @Override
@@ -38,6 +46,14 @@ public abstract class Statement {
             this.identifier = left;
         }
 
+        public Identifier getIdentifier() {
+            return identifier;
+        }
+
+        public Expression getExpression() {
+            return expression;
+        }
+
         @Override
         public String toString() {
             return identifier + "=" + expression.toString();
@@ -53,6 +69,14 @@ public abstract class Statement {
             this.right = right;
         }
 
+        public ArrayGet getLeft() {
+            return left;
+        }
+
+        public Expression getRight() {
+            return right;
+        }
+
         public String toString() {
             return left.toString() + "=" + right.toString();
         }
@@ -65,6 +89,10 @@ public abstract class Statement {
             this.expression = expression;
         }
 
+        public Expression getExpression() {
+            return expression;
+        }
+        
         @Override
         public String toString() {
             return expression.toString();
