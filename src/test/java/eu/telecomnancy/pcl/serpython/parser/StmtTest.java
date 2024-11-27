@@ -7,6 +7,7 @@ import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
 import eu.telecomnancy.pcl.serpython.ast.Block;
 import eu.telecomnancy.pcl.serpython.ast.BooleanLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
+import eu.telecomnancy.pcl.serpython.ast.Function;
 import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
 import eu.telecomnancy.pcl.serpython.ast.NumberLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Identifier;
@@ -316,5 +317,30 @@ public class StmtTest {
         assertThrows(ParserError.class, () -> {
             StmtParser.parseForStatement(parser);
         });
+    }
+
+    @Test
+    public void testFunctionDefinition() throws ParserError {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+        tokens.add(new KeywordToken.DefToken(null));
+        tokens.add(new IdentToken("hello", null));
+        tokens.add(new OperatorToken.OpeningParenthesisToken(null));
+        tokens.add(new IdentToken("name", null));
+        tokens.add(new OperatorToken.ClosingParenthesisToken(null));
+        tokens.add(new OperatorToken.ColonToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.BeginToken(null));
+        tokens.add(new KeywordToken.ReturnToken(null));
+        tokens.add(new IdentToken("name", null));
+        tokens.add(new KeywordToken.NewlineToken(null));
+        tokens.add(new IndentToken.EndToken(null));
+        Parser parser = new Parser(tokens);
+        Function out = StmtParser.parseFunction(parser);
+        assertNotNull(out);
+        assertTrue(out instanceof Function);
+        Function function = (Function)out;
+        assertEquals(function.getName(), new Identifier("hello"));
+        assertNotNull(function.getInstructions());
+        assertNotNull(function.getInstructions());
     }
 }
