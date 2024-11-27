@@ -22,9 +22,11 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.PrintToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ReturnToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.AssignToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ClosingBracketToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ClosingParenthesisToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ColonToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.CommaToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OpeningBracketToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OpeningParenthesisToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.DefToken;
 import eu.telecomnancy.pcl.serpython.parser.ExprParser;
 
@@ -92,6 +94,7 @@ public class StmtParser {
         }
         parser.consume();
         while (!(parser.peek() instanceof EndToken)) {
+            parser.ignoreNewlines();
             statementList.add(parseStatement(parser));
         }
         parser.consume();
@@ -138,7 +141,7 @@ public class StmtParser {
     public static IfStatement parseIfStatement(Parser parser) throws ParserError {
         if (parser.peek() instanceof IfToken){
             parser.consume();
-            Expression expre = AtomParser.parseIdentifier(parser);
+            Expression expre = ExprParser.parseExpr(parser);
             if (!(parser.peek() instanceof ColonToken)) {
                 throw new ParserError(ParserErrorKind.ExpectedColonToken);
             }
@@ -167,12 +170,9 @@ public class StmtParser {
 
         ArrayList<Identifier> arguments = new ArrayList<Identifier>();
         arguments.add(AtomParser.parseIdentifier(parser));
-        parser.consume();
-
         while (parser.peek() instanceof CommaToken){
             parser.consume();
             arguments.add(AtomParser.parseIdentifier(parser));
-            parser.consume();
         }
         return arguments;
 
@@ -187,13 +187,12 @@ public class StmtParser {
             throw new ParserError(ParserErrorKind.ExpectedIdentifier);
         }
         Identifier name = AtomParser.parseIdentifier(parser);
-        parser.consume();
-        if(!(parser.peek() instanceof OpeningBracketToken)){
+        if(!(parser.peek() instanceof OpeningParenthesisToken)){
             throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis);
         }
         parser.consume();
         ArrayList<Identifier> arguments = parseArguments(parser);
-        if(!(parser.peek() instanceof ClosingBracketToken)){
+        if(!(parser.peek() instanceof ClosingParenthesisToken)){
             throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis);
         }
         parser.consume();

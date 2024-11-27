@@ -84,8 +84,9 @@ public class Parser {
             ignoreNewlines();
             if (this.peek() instanceof DefToken){
                 functions.add(StmtParser.parseFunction(this));
+            } else {
+                statements.add(StmtParser.parseStatement(this));
             }
-            statements.add(StmtParser.parseStatement(this));
        }
        Block bloc = new Block(statements);
        return new Program(functions, bloc);

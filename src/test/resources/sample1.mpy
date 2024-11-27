@@ -11,5 +11,5 @@ e = d - 5
 for i in range(3):
     print("Calculating: "+i )
 
-f = e / 2
+f = e // 2
 print("Result: "+f)

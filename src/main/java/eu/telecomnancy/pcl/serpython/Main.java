@@ -6,8 +6,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
+import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.lexer.Lexer;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
+import eu.telecomnancy.pcl.serpython.parser.Parser;
 
 public class Main {
     public static void main(String[] args) {
@@ -29,9 +31,16 @@ public class Main {
             for (var token : tokens) {
                 System.out.println(token.toString()+" ");
             }
+
+            Parser parser = new Parser(tokens);
+            parser.parse();
+            
         } catch (IOException e) {
             System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         } catch (LexerError e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParserError e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

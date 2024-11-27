@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # Calcul du factoriel de 5
     fact = factorial(5)
     print("Factorial of 5 is:"+fact)
-
+    
     # Calcul de la somme des entiers de 1 à 5
     total_sum = sum_recursive(5)
     print("Sum of numbers from 1 to 5 is:"+total_sum)
