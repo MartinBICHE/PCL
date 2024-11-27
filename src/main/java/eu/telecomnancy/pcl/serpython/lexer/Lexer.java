@@ -86,7 +86,14 @@ public class Lexer {
     public ArrayList<Token> tokenize() throws LexerError{
         while(!isEOF()) {
             char current = getCurrent();
-            if(current == ' ' || current == '\t') {
+            if(current == '#') {
+                advance();
+                current = getCurrent();
+                while(current != '\n') {
+                    advance();
+                    current = getCurrent();
+                } 
+            }else if(current == ' ' || current == '\t') {
                 skipWhitespace();
             } else if(Character.isDigit(current)) {
                 readNumber();
