@@ -157,18 +157,6 @@ public abstract class Statement {
             return block;
         }
 
-        public Expression getExpression() {
-            return expression;
-        }
-
-        public Identifier getIdent() {
-            return ident;
-        }
-
-        public Block getBlock() {
-            return block;
-        }
-
         @Override
         public String toString(){
             return "for" +  ident.toString() + "in" + expression.toString() + ":" + block.toString();
