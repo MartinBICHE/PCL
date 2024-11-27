@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import eu.telecomnancy.pcl.serpython.ast.Program;
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.lexer.Lexer;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
 import eu.telecomnancy.pcl.serpython.parser.Parser;
+import eu.telecomnancy.pcl.serpython.visualizer.Visualizer;
 
 public class Main {
     public static void main(String[] args) {
@@ -32,8 +34,14 @@ public class Main {
                 System.out.println(token.toString()+" ");
             }
 
+            System.out.println("\n\n");
+
             Parser parser = new Parser(tokens);
-            parser.parse();
+            Program program = parser.parse();
+            Visualizer visualizer = new Visualizer();
+            visualizer.visualize(program);
+            String mermaidTree = visualizer.getGraph();
+            System.out.println(mermaidTree);
             
         } catch (IOException e) {
             System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());

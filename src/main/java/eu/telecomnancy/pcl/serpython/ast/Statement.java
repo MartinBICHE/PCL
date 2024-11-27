@@ -110,9 +110,25 @@ public abstract class Statement {
             this.elseBlock = elseBlock;
         }
 
+        public Expression getExpression() {
+            return expression;
+        }
+
+        public Block getIfBlock() {
+            return ifBlock;
+        }
+
+        public Block getElseBlock() {
+            return elseBlock;
+        }
+
         @Override
         public String toString() {
-            return "if" + expression.toString() + ":" + ifBlock.toString() + "else" + elseBlock.toString();
+            if(elseBlock == null) {
+                return "if" + expression.toString() + ":" + ifBlock.toString();
+            } else {
+                return "if" + expression.toString() + ":" + ifBlock.toString() + "else" + elseBlock.toString();
+            }
         }
 
 
@@ -127,6 +143,18 @@ public abstract class Statement {
             this.expression=expression;
             this.ident = ident;
             this.block =block;
+        }
+
+        public Expression getExpression() {
+            return expression;
+        }
+
+        public Identifier getIdent() {
+            return ident;
+        }
+
+        public Block getBlock() {
+            return block;
         }
 
         @Override

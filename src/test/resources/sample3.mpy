@@ -1,0 +1,9 @@
+
+def hello(name):
+    new_name = name + " World!"
+    return [new_name, 3 + 2]
+
+name = input("Enter your name: ")
+list = hello(name)
+print(list[0])
+hello("3" + "nope")[list[0] + 5] = 20
