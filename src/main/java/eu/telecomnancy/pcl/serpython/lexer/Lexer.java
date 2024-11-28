@@ -136,8 +136,13 @@ public class Lexer {
         while(!isEOF()) {
             char current = getCurrent();
             if(current == '#') {
-                skipComment();
-            } else if(current == ' ' || current == '\t') {
+                advance();
+                current = getCurrent();
+                while(current != '\n') {
+                    advance();
+                    current = getCurrent();
+                } 
+            }else if(current == ' ' || current == '\t' || current == '\r') {
                 skipWhitespace();
             } else if(Character.isDigit(current)) {
                 readNumber();
@@ -164,7 +169,7 @@ public class Lexer {
      * Skip whitespaces.
      */
     public void skipWhitespace() {
-        while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t')) {
+        while (!isEOF() && (getCurrent() == ' ' || getCurrent() == '\t' || getCurrent() == '\r')) {
             advance();
         }
     }
@@ -349,6 +354,8 @@ public class Lexer {
             emit(new OperatorToken.ClosingBracketToken(span));
         } else if (current == ':') {
             emit(new OperatorToken.ColonToken(span));
+        } else {
+            throw new LexerError("Unknown syntax");
         }
         advance();
     }    

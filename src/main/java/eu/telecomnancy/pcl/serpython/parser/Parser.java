@@ -2,9 +2,15 @@ package eu.telecomnancy.pcl.serpython.parser;
 
 import java.util.ArrayList;
 
+import eu.telecomnancy.pcl.serpython.ast.Block;
+import eu.telecomnancy.pcl.serpython.ast.Function;
+import eu.telecomnancy.pcl.serpython.ast.Program;
+import eu.telecomnancy.pcl.serpython.ast.Statement;
 import eu.telecomnancy.pcl.serpython.common.Span;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.DefToken;
+import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.NewlineToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
 
@@ -82,12 +88,29 @@ public class Parser {
         }
     }
 
+    public void ignoreNewlines() throws ParserError{
+        while (this.peek() instanceof NewlineToken){
+            this.consume();
+        }
+    }
+
     /**
      * Parses the list of tokens.
      */
-    public void parse() throws ParserError {
-        Expression expr = ExprParser.parseExpr(this);
-        System.out.println(expr);
+    public Program parse() throws ParserError {
+        ArrayList<Function> functions = new ArrayList<Function>();
+        ArrayList<Statement> statements = new ArrayList<Statement>();
+        while(this.peek()!=null){
+            ignoreNewlines();
+            if (this.peek() instanceof DefToken){
+                functions.add(StmtParser.parseFunction(this));
+            } else {
+                statements.add(StmtParser.parseStatement(this));
+            }
+       }
+       Block bloc = new Block(statements);
+       return new Program(functions, bloc);
+
     }
 
     /**
