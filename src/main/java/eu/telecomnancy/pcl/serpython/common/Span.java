@@ -40,6 +40,16 @@ public class Span {
         return column;
     }
 
+    public static Span merge(Span span1, Span span2) {
+        if (span1 == null) {
+            return span2;
+        }
+        if (span2 == null) {
+            return span1;
+        }
+        return new Span(Math.min(span1.getLine(), span2.getLine()), Math.min(span1.getColumn(), span2.getColumn()), Math.max(span1.getLine(), span2.getLine()) - Math.min(span1.getLine(), span2.getLine()) + Math.max(span1.getColumn(), span2.getColumn()) - Math.min(span1.getColumn(), span2.getColumn()));
+    }
+
     /**
      * Returns the length of the span.
      *

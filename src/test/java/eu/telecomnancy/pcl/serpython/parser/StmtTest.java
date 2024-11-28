@@ -3,8 +3,6 @@ package eu.telecomnancy.pcl.serpython.parser;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
-import eu.telecomnancy.pcl.serpython.ast.Block;
 import eu.telecomnancy.pcl.serpython.ast.BooleanLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
 import eu.telecomnancy.pcl.serpython.ast.Function;
@@ -22,7 +20,6 @@ import eu.telecomnancy.pcl.serpython.ast.Statement.IndexedAssignementStatement;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class StmtTest {

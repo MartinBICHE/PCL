@@ -12,7 +12,6 @@ import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.DefToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.NewlineToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
-import eu.telecomnancy.pcl.serpython.ast.Expression;
 
 public class Parser {
     private ArrayList<Token> tokens;

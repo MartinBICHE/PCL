@@ -2,6 +2,7 @@ package eu.telecomnancy.pcl.serpython.errors;
 
 import eu.telecomnancy.pcl.serpython.common.Span;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.Token;
+import eu.telecomnancy.pcl.serpython.termcolor.ConsoleColors;
 
 /**
  * Represents an error that occurs during parsing.
@@ -169,5 +170,34 @@ public class ParserError extends Exception {
 
     private static String formatContext(Token context) {
         return " (got " + (context != null ? context.toString() : "EOF") + ")";
+    }
+
+    public String getErrorLine(String context) {
+        int line = this.span.getLine();
+        String[] lines = context.split("\n");
+        return lines[line - 1];
+    }
+
+    public void printError(String context) {
+        String errorLine = getErrorLine(context);
+        int span = this.span.getLength();
+        int lastLine = this.span.getLine();
+        int lastColumn = this.span.getColumn();
+        String message = this.getMessage();
+        String line = Integer.toString(lastLine);
+        for(int i = 0 ; i < line.length() / 2 + 1 ; i += 1) { System.out.print(" "); }
+        System.out.println("--> parser error (line " + lastLine + ")");
+        for(int i = 0 ; i < line.length() ; i += 1) { System.out.print(" "); }
+        System.out.println(ConsoleColors.GREEN + " | " + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + line + " | " + ConsoleColors.RESET + ConsoleColors.WHITE_BOLD_BRIGHT + errorLine + ConsoleColors.RESET);
+        for(int i = 0 ; i < line.length() ; i += 1) { System.out.print(" "); }
+        System.out.print(ConsoleColors.GREEN + " | " + ConsoleColors.RESET);
+        for(int i = 0 ; i < lastColumn - 1 ; i += 1) { System.out.print(" "); }
+        for(int i = 0 ; i < span ; i += 1) { System.out.print(ConsoleColors.RED_BOLD + "^" + ConsoleColors.RESET); }
+        System.out.println();
+        for(int i = 0 ; i < line.length() ; i += 1) { System.out.print(" "); }
+        System.out.print(ConsoleColors.GREEN + " | " + ConsoleColors.RESET);
+        for(int i = 0 ; i < lastColumn + 1 - message.length() / 2 ; i += 1) { System.out.print(" "); }
+        System.out.println(ConsoleColors.RED_BOLD + message + ConsoleColors.RESET);
     }
 }

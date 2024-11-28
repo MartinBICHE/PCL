@@ -50,8 +50,7 @@ public class Main {
         } catch (LexerError e) {
             e.printError();
         } catch (ParserError e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printError(fileContent);
         }
     }
 }

@@ -1,18 +1,14 @@
+if hello == "world":
+    print("OK")
 
+def function(a, b 465678):
+    return a + b
 
-
-
-
-for i in range(5):
-    print(i)
-
-
-
-
-
-
-
-def func(name):
+def fun():
+    for elem in list:
+        print(elem + "and" + "bye")
     print("hello")
-    print("world")
-a *  # this is a comment
+
+fun(), 3 = 32
+
+a "hello"  # this is a comment

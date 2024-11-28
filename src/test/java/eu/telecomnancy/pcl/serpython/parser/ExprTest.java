@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import eu.telecomnancy.pcl.serpython.ast.ArrayExpression;
 import eu.telecomnancy.pcl.serpython.ast.BooleanLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression;
-import eu.telecomnancy.pcl.serpython.ast.Expression.ArrayGet;
 import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
 import eu.telecomnancy.pcl.serpython.ast.Identifier;
 import eu.telecomnancy.pcl.serpython.ast.NoneLitteral;

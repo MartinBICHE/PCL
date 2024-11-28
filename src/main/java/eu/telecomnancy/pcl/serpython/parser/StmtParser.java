@@ -8,6 +8,7 @@ import eu.telecomnancy.pcl.serpython.ast.Statement.IfStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.IndexedAssignementStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.PrintStatement;
 import eu.telecomnancy.pcl.serpython.ast.Statement.ReturnStatement;
+import eu.telecomnancy.pcl.serpython.common.Span;
 import eu.telecomnancy.pcl.serpython.errors.ParserError;
 import eu.telecomnancy.pcl.serpython.errors.ParserErrorKind;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.IdentToken;
@@ -21,14 +22,11 @@ import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.NewlineToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.PrintToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.ReturnToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.AssignToken;
-import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ClosingBracketToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ClosingParenthesisToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.ColonToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.CommaToken;
-import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OpeningBracketToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.OperatorToken.OpeningParenthesisToken;
 import eu.telecomnancy.pcl.serpython.lexer.tokens.KeywordToken.DefToken;
-import eu.telecomnancy.pcl.serpython.parser.ExprParser;
 
 import java.util.ArrayList;
 import eu.telecomnancy.pcl.serpython.ast.Block;
@@ -40,6 +38,8 @@ import eu.telecomnancy.pcl.serpython.ast.Identifier;
 public class StmtParser {
     
     public static Statement parseSimpleStatement(Parser parser) throws ParserError {
+        Span lastPosition = parser.getPosition(); // get the last position for the error message
+        // parse a statement
         if (parser.peek() instanceof ReturnToken) {
             return parseReturnStatement(parser);
         } else if (parser.peek() instanceof PrintToken) {
@@ -56,7 +56,8 @@ public class StmtParser {
                 IndexedAssignementStatement indexedAssignementStatement = new IndexedAssignementStatement((ArrayGet)left,right);
                 return indexedAssignementStatement;
             } else {
-                throw new ParserError(ParserErrorKind.CannotAssignToExpression);
+                Span errorSpan = Span.merge(lastPosition, parser.getPosition());
+                throw new ParserError(ParserErrorKind.CannotAssignToExpression, errorSpan);
             }
         } else {
             ExpressionStatement expressionStatement = new ExpressionStatement(left);
@@ -73,7 +74,15 @@ public class StmtParser {
 
     public static PrintStatement parsePrintStatement(Parser parser) throws ParserError {
         parser.consume();
+        if(!(parser.peek() instanceof OpeningParenthesisToken)){
+            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis, parser.getPosition(), parser.peek());
+        }
+        parser.consume();
         Expression expression = ExprParser.parseExpr(parser);
+        if(!(parser.peek() instanceof ClosingParenthesisToken)){
+            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
+        }
+        parser.consume();
         PrintStatement printStatement = new PrintStatement(expression);
         return printStatement;
     }
@@ -85,12 +94,12 @@ public class StmtParser {
         } else {
             statementList.add(parseSimpleStatement(parser));
             if (!(parser.peek() instanceof NewlineToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedNewLine);
+                throw new ParserError(ParserErrorKind.ExpectedNewLine, parser.getPosition(), parser.peek());
             }
             parser.consume();
         }
          if (!(parser.peek() instanceof BeginToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedBegin);
+                throw new ParserError(ParserErrorKind.ExpectedBegin, parser.getPosition(), parser.peek());
         }
         parser.consume();
         while (!(parser.peek() instanceof EndToken)) {
@@ -112,7 +121,7 @@ public class StmtParser {
         else{
             Statement state = parseSimpleStatement(parser);
             if (!(parser.peek() instanceof NewlineToken)){
-                throw new ParserError(ParserErrorKind.ExpectedNewLine);
+                throw new ParserError(ParserErrorKind.ExpectedNewLine, parser.getPosition(), parser.peek());
             }
             parser.consume();
             return state;
@@ -124,18 +133,18 @@ public class StmtParser {
             parser.consume();
             Identifier ident = AtomParser.parseIdentifier(parser);
             if (!(parser.peek() instanceof InToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedInToken);
+                throw new ParserError(ParserErrorKind.ExpectedInToken, parser.getPosition(), parser.peek());
             }
             parser.consume();
             Expression expre = ExprParser.parseExpr(parser);
             if (!(parser.peek() instanceof ColonToken)){
-                throw new ParserError(ParserErrorKind.ExpectedColonToken);
+                throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
             }
             parser.consume();
             Block block = parseBlock(parser);
             return new ForStatement(expre, ident, block);
         }
-        throw new ParserError(ParserErrorKind.ExpectedForToken);
+        throw new ParserError(ParserErrorKind.ExpectedForToken, parser.getPosition(), parser.peek());
     }
 
     public static IfStatement parseIfStatement(Parser parser) throws ParserError {
@@ -143,14 +152,14 @@ public class StmtParser {
             parser.consume();
             Expression expre = ExprParser.parseExpr(parser);
             if (!(parser.peek() instanceof ColonToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedColonToken);
+                throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
             }
             parser.consume();
             Block ifblock = parseBlock(parser);
             if (parser.peek() instanceof ElseToken){
                 parser.consume();
                 if (!(parser.peek() instanceof ColonToken)) {
-                    throw new ParserError(ParserErrorKind.ExpectedColonToken);
+                    throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
                 }
                 parser.consume();
                 Block elseblock = parseBlock(parser);
@@ -158,7 +167,7 @@ public class StmtParser {
             }
             return new IfStatement(expre, ifblock, null);
         }
-        throw new ParserError(ParserErrorKind.ExpectedIfToken);
+        throw new ParserError(ParserErrorKind.ExpectedIfToken, parser.getPosition(), parser.peek());
     }
 
 
@@ -180,32 +189,29 @@ public class StmtParser {
 
     public static Function parseFunction(Parser parser) throws ParserError{
         if(!(parser.peek() instanceof DefToken)){
-            throw new ParserError(ParserErrorKind.ExpectedDefToken);
+            throw new ParserError(ParserErrorKind.ExpectedDefToken, parser.getPosition(), parser.peek());
         }
         parser.consume();
         if(!(parser.peek() instanceof IdentToken)){
-            throw new ParserError(ParserErrorKind.ExpectedIdentifier);
+            throw new ParserError(ParserErrorKind.ExpectedIdentifier, parser.getPosition(), parser.peek());
         }
         Identifier name = AtomParser.parseIdentifier(parser);
         if(!(parser.peek() instanceof OpeningParenthesisToken)){
-            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis);
+            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis, parser.getPosition(), parser.peek());
         }
         parser.consume();
         ArrayList<Identifier> arguments = parseArguments(parser);
         if(!(parser.peek() instanceof ClosingParenthesisToken)){
-            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis);
+            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
         }
         parser.consume();
         if(!(parser.peek() instanceof ColonToken)){
-            throw new ParserError(ParserErrorKind.ExpectedColonToken);
+            throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
         }
         parser.consume();
         Block block = parseBlock(parser);
 
         return new Function(name, arguments, block);
     }
-
-    
-
 }
 

@@ -185,6 +185,7 @@ public class Lexer {
 
     public void readNumber() {
         String number = "";
+        int column = this.column;
         while (!isEOF() && Character.isDigit(getCurrent())) {
             number += getCurrent();
             advance();
@@ -198,7 +199,7 @@ public class Lexer {
 
     public void readIdentorKeyWordorNone(){
         String ident = "";
-        
+        int column = this.column;
         ident += getCurrent();
         advance();
             
@@ -310,49 +311,50 @@ public class Lexer {
 
     public void readOperator() throws LexerError {
         char current = getCurrent();
-        Span span = new Span(line, column, 1);
+        Span spanDouble = new Span(line, column, 2);
+        Span spanSimple = new Span(line, column, 1);
     
         if (current == '!' && hasNext() && getNext() == '=') {
             advance();
-            emit(new OperatorToken.NotEqualToken(span));
+            emit(new OperatorToken.NotEqualToken(spanDouble));
         } else if (current == '/' && hasNext()&& getNext() == '/') {
             advance();
-            emit(new OperatorToken.DivideToken(span));
+            emit(new OperatorToken.DivideToken(spanDouble));
         } else if (current == '%') {
-            emit(new OperatorToken.ModuloToken(span));
+            emit(new OperatorToken.ModuloToken(spanDouble));
         } else if (current == '<' && hasNext() && getNext() == '=') {
             advance();
-            emit(new OperatorToken.LessEqualToken(span));
+            emit(new OperatorToken.LessEqualToken(spanDouble));
         } else if (current == '>' && hasNext() && getNext() == '=') {    
             advance();
-            emit(new OperatorToken.GreaterEqualToken(span));
+            emit(new OperatorToken.GreaterEqualToken(spanDouble));
         } else if (current == '=' && hasNext() && getNext() == '=') {
             advance();
-            emit(new OperatorToken.EqualToken(span)); 
+            emit(new OperatorToken.EqualToken(spanDouble)); 
         } else if (current == '+') {
-            emit(new OperatorToken.PlusToken(span));
+            emit(new OperatorToken.PlusToken(spanSimple));
         } else if(current == ',') {
-            emit(new OperatorToken.CommaToken(span));
+            emit(new OperatorToken.CommaToken(spanSimple));
         } else if (current == '-') {
-            emit(new OperatorToken.MinusToken(span));
+            emit(new OperatorToken.MinusToken(spanSimple));
         } else if (current == '*') {
-            emit(new OperatorToken.MultiplyToken(span));
+            emit(new OperatorToken.MultiplyToken(spanSimple));
         } else if (current == '<') {
-            emit(new OperatorToken.LessToken(span));
+            emit(new OperatorToken.LessToken(spanSimple));
         } else if (current == '>') {
-            emit(new OperatorToken.GreaterToken(span));
+            emit(new OperatorToken.GreaterToken(spanSimple));
         } else if (current == '=') {
-            emit(new OperatorToken.AssignToken(span));
+            emit(new OperatorToken.AssignToken(spanSimple));
         } else if (current == '(') {
-            emit(new OperatorToken.OpeningParenthesisToken(span));
+            emit(new OperatorToken.OpeningParenthesisToken(spanSimple));
         } else if (current == ')') {
-            emit(new OperatorToken.ClosingParenthesisToken(span));
+            emit(new OperatorToken.ClosingParenthesisToken(spanSimple));
         } else if (current == '[') {
-            emit(new OperatorToken.OpeningBracketToken(span));
+            emit(new OperatorToken.OpeningBracketToken(spanSimple));
         } else if (current == ']') {    
-            emit(new OperatorToken.ClosingBracketToken(span));
+            emit(new OperatorToken.ClosingBracketToken(spanSimple));
         } else if (current == ':') {
-            emit(new OperatorToken.ColonToken(span));
+            emit(new OperatorToken.ColonToken(spanSimple));
         } else {
             throw new LexerError(this, "Unknown syntax '" + current + "'");
         }
@@ -362,6 +364,7 @@ public class Lexer {
     public void readString() throws LexerError {
         StringBuilder string = new StringBuilder();
         boolean escapeMode = false;
+        int column = this.column;
         advance();
         while (escapeMode || getCurrent() != '"') {
             if(!hasNext()) {
@@ -388,7 +391,7 @@ public class Lexer {
             advance();
         }
         advance();
-        Span span = new Span(line, column, string.length());
+        Span span = new Span(line, column, string.length() + 2);
         Token token = new StringToken(string.toString(), span);
         emit(token);
     }
