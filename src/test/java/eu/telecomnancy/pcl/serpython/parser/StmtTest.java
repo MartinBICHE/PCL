@@ -70,6 +70,7 @@ public class StmtTest {
     public void testPrintStatementWithoutValue() throws ParserError {
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens.add(new KeywordToken.PrintToken(null));
+        tokens.add(new KeywordToken.NewlineToken(null));
         Parser parser = new Parser(tokens);
         assertThrows(ParserError.class, () -> {
             StmtParser.parseSimpleStatement(parser);
