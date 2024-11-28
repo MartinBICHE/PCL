@@ -47,11 +47,8 @@ public class Main {
             String mermaidTree = visualizer.getGraph();
             System.out.println(mermaidTree);
             
-        } catch (IOException e) {
-            System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         } catch (LexerError e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printError();
         } catch (ParserError e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

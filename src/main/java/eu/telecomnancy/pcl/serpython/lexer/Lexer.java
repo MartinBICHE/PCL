@@ -158,7 +158,6 @@ public class Lexer {
                 advance();
                 readIndent();
             } else {
-                advance();
                 throw new LexerError(this, "Unexpected character '" + current + "'");
             }
         }
@@ -355,7 +354,7 @@ public class Lexer {
         } else if (current == ':') {
             emit(new OperatorToken.ColonToken(span));
         } else {
-            throw new LexerError("Unknown syntax");
+            throw new LexerError(this, "Unknown syntax '" + current + "'");
         }
         advance();
     }    
