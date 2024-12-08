@@ -20,6 +20,8 @@ dependencies {
 	implementation(platform("org.junit:junit-bom:5.11.2"))
 	implementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("commons-cli:commons-cli:1.9.0")
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
