@@ -42,15 +42,21 @@ public class Main {
 
             Parser parser = new Parser(tokens);
             Program program = parser.parse();
-            Visualizer visualizer = new Visualizer();
-            visualizer.visualize(program);
-            String mermaidTree = visualizer.getGraph();
-            System.out.println(mermaidTree);
-            
+            if(parser.hasErrors()) {
+                for (var error : parser.getErrors()) {
+                    error.printError(fileContent);
+                    System.out.println("\n\n");
+                }
+                int nb = parser.getErrors().size();
+                System.out.println(nb + " errors found");
+            } else {
+                Visualizer visualizer = new Visualizer();
+                visualizer.visualize(program);
+                String mermaidTree = visualizer.getGraph();
+                System.out.println(mermaidTree);
+            }
         } catch (LexerError e) {
             e.printError();
-        } catch (ParserError e) {
-            e.printError(fileContent);
         }
     }
 }

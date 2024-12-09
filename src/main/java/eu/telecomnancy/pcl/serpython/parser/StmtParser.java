@@ -104,7 +104,15 @@ public class StmtParser {
         parser.consume();
         while (!(parser.peek() instanceof EndToken)) {
             parser.ignoreNewlines();
-            statementList.add(parseStatement(parser));
+            try {
+                statementList.add(parseStatement(parser));
+            } catch (ParserError e) {
+                parser.addError(e);
+                while(!(parser.peek() instanceof NewlineToken)) {
+                    parser.consume();
+                }
+                parser.consume();
+            }
         }
         parser.consume();
         Block block = new Block(statementList);

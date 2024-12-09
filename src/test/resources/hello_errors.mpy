@@ -1,8 +1,11 @@
 if hello == "world":
     print("OK")
 
-def function(a, b 465678):
-    return a + b
+x = "loo" + 3456 567
+
+def function(a, b):
+    m = 5
+    return a + "hello"
 
 def fun():
     for elem in list:
@@ -11,4 +14,4 @@ def fun():
 
 fun(), 3 = 32
 
-a "hello"  # this is a comment
+a "hello"  # this is a I don't know what to do with this line of code but it's not a syntax error either so I'll ignore it

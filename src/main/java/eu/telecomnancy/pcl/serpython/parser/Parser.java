@@ -17,6 +17,7 @@ public class Parser {
     private ArrayList<Token> tokens;
     private int index;
     private final String source;
+    private ArrayList<ParserError> errors = new ArrayList<ParserError>();
 
     /**
      * Constructs a Parser object with the given list of tokens and the source code.
@@ -28,6 +29,7 @@ public class Parser {
         this.tokens = tokens;
         this.index = 0;
         this.source = source;
+        this.errors = new ArrayList<ParserError>();
     }
 
     /**
@@ -93,10 +95,31 @@ public class Parser {
         }
     }
 
+    public void addError(ParserError error){
+        this.errors.add(error);
+    }
+
+    public ArrayList<ParserError> getErrors(){
+        return this.errors;
+    }
+
+    public boolean hasErrors(){
+        return this.errors.size() > 0;
+    }
+
     /**
      * Parses the list of tokens.
      */
-    public Program parse() throws ParserError {
+    public Program parse() {
+        try {
+            return parseInternal();
+        } catch (ParserError e) {
+            this.addError(e);
+            return null;
+        }
+    }
+
+    private Program parseInternal() throws ParserError {
         ArrayList<Function> functions = new ArrayList<Function>();
         ArrayList<Statement> statements = new ArrayList<Statement>();
         while(this.peek()!=null){
@@ -104,12 +127,19 @@ public class Parser {
             if (this.peek() instanceof DefToken){
                 functions.add(StmtParser.parseFunction(this));
             } else {
-                statements.add(StmtParser.parseStatement(this));
+                try {
+                    statements.add(StmtParser.parseStatement(this));
+                } catch (ParserError e) {
+                    this.addError(e);
+                    while(!(this.peek() instanceof NewlineToken)){
+                        this.consume();
+                    }
+                    this.consume();
+                }
             }
        }
        Block bloc = new Block(statements);
        return new Program(functions, bloc);
-
     }
 
     /**
