@@ -19,6 +19,8 @@ import eu.telecomnancy.pcl.serpython.ast.Statement.ReturnStatement;
 import eu.telecomnancy.pcl.serpython.ast.StringLitteral;
 import eu.telecomnancy.pcl.serpython.ast.Expression.ArrayGet;
 import eu.telecomnancy.pcl.serpython.ast.Expression.BinaryOperation;
+import eu.telecomnancy.pcl.serpython.ast.Expression.Negation;
+import eu.telecomnancy.pcl.serpython.ast.Expression.Not;
 import eu.telecomnancy.pcl.serpython.ast.Function;
 import eu.telecomnancy.pcl.serpython.ast.FunctionCall;
 
@@ -204,6 +206,10 @@ public class Visualizer {
             return visualiseFunctionCall((FunctionCall) expression);
         } else if(expression instanceof BinaryOperation) {
             return visualiseBinaryOperator((BinaryOperation) expression);
+        } else if(expression instanceof Negation) {
+            return visualiseNegation((Negation) expression);
+        } else if(expression instanceof Not) {
+            return visualiseNot((Not) expression);
         } else if(expression instanceof ArrayExpression) {
             return visualiseArrayExpression((ArrayExpression) expression);
         } else if(expression instanceof ArrayGet) {
@@ -266,6 +272,26 @@ public class Visualizer {
         String rightDescription = right.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + leftName + "[" + leftDescription + "];\n");
         emit(nodeName + "[" + nodeDescription + "] --> " + rightName + "[" + rightDescription + "];\n");
+        return new Pair<>(nodeName, nodeDescription);
+    }
+
+    public Pair<String, String> visualiseNot(Not expression) {
+        String nodeName = getNewName();
+        String nodeDescription = " \\not ";
+        Pair<String, String> inner = visualiseExpression(expression.getInner());
+        String innerName = inner.getFirst();
+        String innerDescription = inner.getSecond();
+        emit(nodeName + "[" + nodeDescription + "] --> " + innerName + "[" + innerDescription + "];\n");
+        return new Pair<>(nodeName, nodeDescription);
+    }
+
+    public Pair<String, String> visualiseNegation(Negation expression) {
+        String nodeName = getNewName();
+        String nodeDescription = " \\- ";
+        Pair<String, String> inner = visualiseExpression(expression.getInner());
+        String innerName = inner.getFirst();
+        String innerDescription = inner.getSecond();
+        emit(nodeName + "[" + nodeDescription + "] --> " + innerName + "[" + innerDescription + "];\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
