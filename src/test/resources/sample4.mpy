@@ -1,0 +1,13 @@
+def factorial(n, memo):
+    # Directly check if n is a key in memo
+    if get(memo, n) !=  None:
+        return memo[n]
+    
+    if n == 0 or n == 1:
+        return 1
+    
+    memo[n] = n * factorial(n - 1, memo)
+    return memo[n]
+
+# Example usage:
+print(factorial(5, []))  # Output: 120

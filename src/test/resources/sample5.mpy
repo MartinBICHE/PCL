@@ -1,0 +1,31 @@
+def calculate_distance(path, dist_matrix):
+    total_distance = 0
+    for i in range(len(path) - 1):
+        total_distance = total_distance + dist_matrix[path[i]][path[i + 1]]
+    total_distance = total_distance + dist_matrix[path[-1]][path[0]]  # Return to the starting point
+    return total_distance
+
+def tsp(dist_matrix):
+    n = len(dist_matrix)
+    min_distance = float("inf")
+    best_path = None
+    
+    # Generate all possible permutations of cities (except the first one)
+    for perm in itertools_permutations(range(1, n)):
+        path = [0] + list(perm)  # Start from city 0
+        distance = calrangeculate_distance(path, dist_matrix)
+        
+        if distance < min_distance:
+            min_distance = distance
+            best_path = path
+    
+    return [best_path, min_distance]
+
+# Example usage:
+dist_matrix = [[0, 10, 15, 20],[10, 0, 35, 25],[15, 35, 0, 30],[20, 25, 30, 0]]
+
+result = tsp(dist_matrix)
+best_path = result[0]
+min_distance = result[1]
+print("Best Path:" + best_path)
+print("Minimum Distance:" + min_distance)
