@@ -58,8 +58,8 @@ Clone the repository and install any required dependencies:
 ```bash
 $ git clone https://gibson.telecomnancy.univ-lorraine.fr/projets/2425/compil/pcl-grp23.git
 $ cd pcl-grp23
-$ gradle assemble
-$ java -jar build/lib/serpython-version.jar
+$ gradle build
+$ java -jar build/lib/serpython-all.jar
 ```
 
 ## Usage
@@ -69,26 +69,50 @@ $ java -jar build/lib/serpython-version.jar
 To compile a Mini-Python source file:
 
 ```bash
-$ java -jar build/lib/serpython-version.jar [options] [source-file]
+$ java -jar build/lib/serpython-all.jar [options] [source-file]
 ```
 
 ### Command-line Options
 
-- `-o [file]`: Specify output file name
-- `--help`: Show help message
+```
+usage: 
+ -c,--code <code>       Specify the input code as a string
+ -f,--file <filename>   Specify the input file
+ -p,--parse             Parse the input (default behavior)
+ -t,--tokenize          Tokenize the input and display tokens
+ -v,--visualize         Visualize the parse tree as Mermaid code
+```
 
 ### Examples
 
-#### Compiling a simple program:
+#### Generate the tokens of a source file
 
 ```bash
-$ [project-name] -o output.exe example.lang
+java -jar build/libs/serpython-all.jar -t -f <source-file>
 ```
 
-#### Running in debug mode:
+or 
 
 ```bash
-$ [project-name] --debug example.lang
+java -jar build/libs/serpython-all.jar -t -c <inline-code>
+```
+
+Quick example:
+
+```bash
+java -jar build/libs/serpython-all.jar -t -f src/test/resources/hello_world.mpy
+```
+
+#### Parse the source file
+
+```bash
+java -jar build/libs/serpython-all.jar -p -f src/test/resources/hello_world.mpy
+```
+
+Add the `--visualize` flag to get a Mermaid diagram of the AST generated.
+
+```bash
+java -jar build/libs/serpython-all.jar -p -v -f src/test/resources/hello_world.mpy
 ```
 
 ## Examples
