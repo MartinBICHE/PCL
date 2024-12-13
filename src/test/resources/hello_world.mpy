@@ -7,3 +7,16 @@ if a == 5:
     for elem in loist:
         print(elem)
         elem = elem * 56 + 3
+
+def fun():
+    for elem in list:
+        print(elem + "and" + "bye")
+    print("hello")
+    hello(name)
+    if something:
+        print("hello")
+        return "hello"
+    else:
+        print("bye")
+        return "bye" + "bye"
+    return "hello" + "world" + "!"

@@ -1,9 +1,14 @@
 package eu.telecomnancy.pcl.serpython;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.zip.Deflater;
 
 import eu.telecomnancy.pcl.serpython.ast.Program;
 import eu.telecomnancy.pcl.serpython.errors.LexerError;
@@ -14,6 +19,8 @@ import eu.telecomnancy.pcl.serpython.parser.Parser;
 import eu.telecomnancy.pcl.serpython.visualizer.Visualizer;
 
 import org.apache.commons.cli.*;
+
+import com.google.gson.Gson;
 
 public class Main {
     public static void main(String[] args) {
@@ -126,7 +133,26 @@ public class Main {
             Visualizer visualizer = new Visualizer();
             visualizer.visualize(program);
             String mermaidTree = visualizer.getGraph();
-            System.out.println(mermaidTree); 
+            
+            Gson gson = new Gson();
+            String jsonString = gson.toJson(mermaidTree);
+
+            String simpl = "{\"code\":" + jsonString + ",\"mermaid\":\"{\\n  \\\"theme\\\": \\\"dark\\\"\\n}\",\"autoSync\":true,\"updateDiagram\":false,\"editorMode\":\"code\"}";
+
+            String base64String = Base64.getEncoder().encodeToString(simpl.getBytes(StandardCharsets.UTF_8));
+            String url = "https://mermaid.live/view#base64:" + base64String.replace("/", "_").replace("+", "-");
+
+            // And now compressed
+            byte[] output = new byte[10000];
+            Deflater compresser = new Deflater();
+            compresser.setInput(simpl.getBytes(StandardCharsets.UTF_8));
+            compresser.finish();
+            int compressedDataLength = compresser.deflate(output);
+            compresser.end();
+
+            String compressedBase64String = Base64.getEncoder().encodeToString(Arrays.copyOfRange(output, 0, compressedDataLength));
+            String url2 = "https://mermaid.live/view#pako:" + compressedBase64String.replace("/", "_").replace("+", "-");
+            System.out.println(url2);
         } catch (LexerError e) {
             e.printError();
         } catch (ParserError e) {

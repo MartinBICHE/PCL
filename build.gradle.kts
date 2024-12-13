@@ -21,7 +21,7 @@ dependencies {
 	implementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("commons-cli:commons-cli:1.9.0")
-
+    implementation("com.google.code.gson:gson:2.8.9")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
