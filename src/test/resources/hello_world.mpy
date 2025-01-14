@@ -1,12 +1,16 @@
 def hello(name):
     return "Hello, "+name+"!"
 
+n = [1, 2, 3]
+
 print (hello(name))
 if a == 5:
     c = 3
     for elem in loist:
         print(elem)
         elem = elem * 56 + 3
+else:
+    print("hi there")
 
 def fun():
     for elem in list:
