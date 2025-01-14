@@ -5,7 +5,7 @@ x = "loo" + 3456 567
 
 def function(a, b):
     m = 5
-    return a + "hello"
+    return m + "hello"
 
 def fun():
     for elem in list:
