@@ -175,7 +175,10 @@ public class ParserError extends Exception {
     public String getErrorLine(String context) {
         int line = this.span.getLine();
         String[] lines = context.split("\n");
-        return lines[line - 1];
+        if(line <= lines.length) {
+            return lines[line - 1];
+        }
+        return "";
     }
 
     public void printError(String context) {

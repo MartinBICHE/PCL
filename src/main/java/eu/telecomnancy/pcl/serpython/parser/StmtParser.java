@@ -98,8 +98,8 @@ public class StmtParser {
             }
             parser.consume();
         }
-         if (!(parser.peek() instanceof BeginToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedBegin, parser.getPosition(), parser.peek());
+        if (!(parser.peek() instanceof BeginToken)) {
+            throw new ParserError(ParserErrorKind.ExpectedBegin, parser.getPosition(), parser.peek());
         }
         parser.consume();
         while (!(parser.peek() instanceof EndToken)) {
@@ -108,9 +108,7 @@ public class StmtParser {
                 statementList.add(parseStatement(parser));
             } catch (ParserError e) {
                 parser.addError(e);
-                while(!(parser.peek() instanceof NewlineToken)) {
-                    parser.consume();
-                }
+                ErrorHandlingStrategies.skipUntilNewlineToken(parser);
                 parser.consume();
             }
         }
@@ -141,14 +139,25 @@ public class StmtParser {
             parser.consume();
             Identifier ident = AtomParser.parseIdentifier(parser);
             if (!(parser.peek() instanceof InToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedInToken, parser.getPosition(), parser.peek());
+                ParserError error = new ParserError(ParserErrorKind.ExpectedInToken, parser.getPosition(), parser.peek());
+                parser.addError(error);
+            } else {
+                parser.consume();
             }
-            parser.consume();
-            Expression expre = ExprParser.parseExpr(parser);
+            Expression expre = null;
+            try {
+                expre = ExprParser.parseExpr(parser);
+            } catch (ParserError e) {
+                parser.addError(e);
+                ErrorHandlingStrategies.skipUntilColon(parser);
+            }
             if (!(parser.peek() instanceof ColonToken)){
-                throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+                ParserError error = new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+                parser.addError(error);
+                ErrorHandlingStrategies.skipUntilNewlineToken(parser);
+            } else {
+                parser.consume();
             }
-            parser.consume();
             Block block = parseBlock(parser);
             return new ForStatement(expre, ident, block);
         }
@@ -158,11 +167,20 @@ public class StmtParser {
     public static IfStatement parseIfStatement(Parser parser) throws ParserError {
         if (parser.peek() instanceof IfToken){
             parser.consume();
-            Expression expre = ExprParser.parseExpr(parser);
-            if (!(parser.peek() instanceof ColonToken)) {
-                throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+            Expression expre = null;
+            try {
+                expre = ExprParser.parseExpr(parser);
+            } catch (ParserError e) {
+                parser.addError(e);
+                ErrorHandlingStrategies.skipUntilColon(parser);
             }
-            parser.consume();
+            if (!(parser.peek() instanceof ColonToken)) {
+                ParserError error = new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+                parser.addError(error);
+                ErrorHandlingStrategies.skipUntilColon(parser);
+            } else {
+                parser.consume();
+            }
             Block ifblock = parseBlock(parser);
             if (parser.peek() instanceof ElseToken){
                 parser.consume();
@@ -186,10 +204,15 @@ public class StmtParser {
         }
 
         ArrayList<Identifier> arguments = new ArrayList<Identifier>();
-        arguments.add(AtomParser.parseIdentifier(parser));
+        try {
+            arguments.add(AtomParser.parseIdentifier(parser));
         while (parser.peek() instanceof CommaToken){
             parser.consume();
             arguments.add(AtomParser.parseIdentifier(parser));
+        }
+        } catch (ParserError e) {
+            parser.addError(e);
+            ErrorHandlingStrategies.skipUntilClosingParenthesis(parser);
         }
         return arguments;
 
@@ -210,13 +233,19 @@ public class StmtParser {
         parser.consume();
         ArrayList<Identifier> arguments = parseArguments(parser);
         if(!(parser.peek() instanceof ClosingParenthesisToken)){
-            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
+            ParserError error = new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
+            parser.addError(error);
+            ErrorHandlingStrategies.skipUntilColon(parser);
+        } else {
+            parser.consume();
         }
-        parser.consume();
         if(!(parser.peek() instanceof ColonToken)){
-            throw new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+            ParserError error = new ParserError(ParserErrorKind.ExpectedColonToken, parser.getPosition(), parser.peek());
+            parser.addError(error);
+            ErrorHandlingStrategies.skipUntilNewlineToken(parser);
+        } else {
+            parser.consume();
         }
-        parser.consume();
         Block block = parseBlock(parser);
 
         return new Function(name, arguments, block);

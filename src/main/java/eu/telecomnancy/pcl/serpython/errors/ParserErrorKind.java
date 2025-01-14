@@ -23,7 +23,8 @@ public enum ParserErrorKind {
     ExpectedColonToken(17,"Expected colon token"),
     ExpectedForToken(18,"Expected for token"),
     ExpectedIfToken(19,"Expected if token"),
-    ExpectedDefToken(20,"Expected def token");
+    ExpectedDefToken(20,"Expected def token"),
+    MissingColon(21, "Missing colon ':'");
 
     private final String message;
     private final int code;
