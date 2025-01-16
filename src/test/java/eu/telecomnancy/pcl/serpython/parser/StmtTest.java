@@ -312,9 +312,8 @@ public class StmtTest {
         tokens.add(new KeywordToken.NewlineToken(null));
         tokens.add(new IndentToken.EndToken(null));
         Parser parser = new Parser(tokens);
-        assertThrows(ParserError.class, () -> {
-            StmtParser.parseForStatement(parser);
-        });
+        StmtParser.parseForStatement(parser);
+        assertTrue(parser.hasErrors());
     }
 
     @Test
