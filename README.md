@@ -16,7 +16,7 @@
 ## Introduction
 
 The **Serpython Compiler** is a Mini-Python compiler designed to compile. It translates Mini-Python (a subset of Python) source
-code into [output (e.g., machine code, bytecode, intermediate representation)] and includes optimizations for [specific features or targets].
+code into AST.
 
 ### Team
 
@@ -27,16 +27,14 @@ code into [output (e.g., machine code, bytecode, intermediate representation)] a
 
 ### Why use Serpython?
 
-- Fast and efficient compilation
-- Support for [languages or standards]
-- [Any unique features or goals]
+- Subset of Python.
+- A good taste of experimentation.
 
 ## Features
 
-- **Cross-platform:** Runs on [list of supported platforms]
-- **Optimization:** Implements advanced optimizations like [list of optimizations: e.g., constant folding, dead code elimination]
-- **Error Reporting:** Detailed syntax and semantic error messages
-- **[Other features]**
+- **Cross-platform:** Runs on all platforms supporting a recent version of Java.
+- **Error Reporting:** Detailed syntax and semantic error messages.
+
 
 ## Installation
 
@@ -59,25 +57,25 @@ Clone the repository and install any required dependencies:
 $ git clone https://gibson.telecomnancy.univ-lorraine.fr/projets/2425/compil/pcl-grp23.git
 $ cd pcl-grp23
 $ gradle build
-$ java -jar build/lib/serpython-all.jar
+$ java -jar build/libs/serpython-all.jar
 ```
 
 ## Usage
 
 ### Basic Command
 
-To compile a Mini-Python source file:
+To compile a Mini-Python source file:ava -jar build/lib/serpython-all.jar
 
 ```bash
-$ java -jar build/lib/serpython-all.jar [options] [source-file]
+$ java -jar build/libs/serpython-all.jar [options] [source-file]
 ```
 
 ### Command-line Options
 
 ```
 usage: 
- -c,--code <code>       Specify the input code as a string
- -f,--file <filename>   Specify the input file
+ -c,--code <code>       Specify the input code as a string (-c/-f mutually exclusive)
+ -f,--file <filename>   Specify the input file (-c/-f mutually exclusive)
  -p,--parse             Parse the input (default behavior)
  -t,--tokenize          Tokenize the input and display tokens
  -v,--visualize         Visualize the parse tree as Mermaid code
@@ -94,7 +92,7 @@ java -jar build/libs/serpython-all.jar -t -f <source-file>
 or 
 
 ```bash
-java -jar build/libs/serpython-all.jar -t -c <inline-code>
+java -jar build/libs/serpython-all.jar -t -c "<inline-code>"
 ```
 
 Quick example:
@@ -121,27 +119,32 @@ Here are some sample programs you can compile using [Project Name]:
 
 1. **Hello World:**
 
-```language
-// Example code for Hello World in [language]
+```python
+print "Hello, world"
+
 ```
 
 2. **Fibonacci Sequence:**
 
-```language
-// Example code for Fibonacci in [language]
+```python
+def fibo(n):
+    if (n <= 1):
+        return 1
+    else:
+        return fibo(n-1) + fibo (n-2)
+
+
+print "Fibo(8): " + fibo(8)
+
 ```
 
-For more examples, refer to the `examples/` directory.
+For more examples, refer to the `src/test/resources/` directory.
 
 ## Testing
 
 ```bash
 $ gradle check
 ```
-
-### Reporting Issues
-
-If you encounter any issues or have feature requests, please open an issue on the GitHub repository.
 
 ## Acknowledgements
 
