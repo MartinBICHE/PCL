@@ -516,4 +516,12 @@ public class LexerTest {
         assertTrue(tokens.get(26) instanceof KeywordToken.NewlineToken);
         assertTrue(tokens.get(27) instanceof IndentToken.EndToken);
     }
+
+    @Test
+    public void testEmptyCode() throws LexerError {
+        String source = "";
+        Lexer lexer = new Lexer(source);
+        ArrayList<Token> tokens = lexer.tokenize();
+        assertEquals(0, tokens.size());
+    }
 }

@@ -161,6 +161,12 @@ public class Lexer {
                 throw new LexerError(this, "Unexpected character '" + current + "'");
             }
         }
+        while (this.indentLevel > 0) {
+            Span span = new Span(line, column, 0);
+            Token token = new EndToken(span);
+            emit(token);
+            this.indentLevel -= 1;
+        }
         return this.tokens;
     }
 
