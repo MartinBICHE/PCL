@@ -137,7 +137,12 @@ public class StmtParser {
     public static ForStatement parseForStatement(Parser parser) throws ParserError {
         if (parser.peek() instanceof ForToken) {
             parser.consume();
-            Identifier ident = AtomParser.parseIdentifier(parser);
+            Identifier ident = null;
+            try {
+                ident = AtomParser.parseIdentifier(parser);
+            } catch (ParserError e) {
+                parser.addError(e);
+            }
             if (!(parser.peek() instanceof InToken)) {
                 ParserError error = new ParserError(ParserErrorKind.ExpectedInToken, parser.getPosition(), parser.peek());
                 parser.addError(error);
