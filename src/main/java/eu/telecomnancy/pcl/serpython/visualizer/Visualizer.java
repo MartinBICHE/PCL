@@ -81,7 +81,7 @@ public class Visualizer {
 
     public Pair<String, String> visualiseIndexedAssignementStatement(IndexedAssignementStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " indexedAssignement ";
+        String nodeDescription = " INDEXED_ASSIGNEMENT ";
         Pair<String, String> left = visualiseExpression(statement.getLeft());
         String leftName = left.getFirst();
         String leftDescription = left.getSecond();
@@ -95,7 +95,7 @@ public class Visualizer {
 
     public Pair<String, String> visualiseAssignmentStatement(AssignmentStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " assignment ";
+        String nodeDescription = " ASSIGNEMENT ";
         Pair<String, String> identifier = visualiseExpression(statement.getIdentifier());
         String identifierName = identifier.getFirst();
         String identifierDescription = identifier.getSecond();
@@ -109,41 +109,53 @@ public class Visualizer {
 
     public Pair<String, String> visualiseFunction(Function function) {
         String nodeName = getNewName();
-        String nodeDescription = " function ";
+        String nodeDescription = " FUNCTION ";
         Pair<String, String> identifier = visualiseExpression(function.getName());
         String identifierName = identifier.getFirst();
         String identifierDescription = identifier.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + identifierName + "[" + identifierDescription + "];\n");
+        String paramNodeName = getNewName();
+        String paramNodeDescription = " PARAMETERS ";
+        for(Identifier param : function.getArguments()) {
+            Pair<String, String> parameter = visualiseExpression(param);
+            String paramName = parameter.getFirst();
+            String paramDescription = parameter.getSecond();
+            emit(paramNodeName + " --> " + paramName + "[" + paramDescription + "];\n");
+        }
+        emit(nodeName + "[" + nodeDescription + "] --> " + paramNodeName + "[" + paramNodeDescription + "];\n");
         Pair<String, String> block = visualiseBlock(function.getInstructions());
         String blockName = block.getFirst();
         String blockDescription = block.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + blockName + "[" + blockDescription + "];\n");
+        emit(NodesColor.FunctionColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
     public Pair<String, String> visualiseReturnStatement(ReturnStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " return ";
+        String nodeDescription = " RETURN ";
         Pair<String, String> expression = visualiseExpression(statement.getExpression());
         String expressionName = expression.getFirst();
         String expressionDescription = expression.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + expressionName + "[" + expressionDescription + "];\n");
+        emit(NodesColor.IfElseForColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
     public Pair<String, String> visualizePrintStatement(PrintStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " print ";
+        String nodeDescription = " PRINT ";
         Pair<String, String> expression = visualiseExpression(statement.getExpression());
         String expressionName = expression.getFirst();
         String expressionDescription = expression.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + expressionName + "[" + expressionDescription + "];\n");
+        emit(NodesColor.IfElseForColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
     public Pair<String, String> visualiseIfStatement(IfStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " if ";
+        String nodeDescription = " IF ";
         Pair<String, String> expression = visualiseExpression(statement.getExpression());
         String expressionName = expression.getFirst();
         String expressionDescription = expression.getSecond();
@@ -153,17 +165,22 @@ public class Visualizer {
         String ifBlockDescription = ifBlock.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + ifBlockName + "[" + ifBlockDescription + "];\n");
         if(statement.getElseBlock() != null) {
+            String elseNodeName = getNewName();
+            String elseNodeDescription = " ELSE ";
+            emit(NodesColor.IfElseForColor(elseNodeName) + "\n");
             Pair<String, String> elseBlock = visualiseBlock(statement.getElseBlock());
             String elseBlockName = elseBlock.getFirst();
             String elseBlockDescription = elseBlock.getSecond();
-            emit(nodeName + "[" + nodeDescription + "] --> " + elseBlockName + "[" + elseBlockDescription + "];\n");
+            emit(elseNodeName + "[" + elseNodeDescription + "] --> " + elseBlockName + "[" + elseBlockDescription + "];\n");
+            emit(nodeName + " --> " + elseNodeName + "\n");
         }
+        emit(NodesColor.IfElseForColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
     public Pair<String, String> visualiseForStatement(ForStatement statement) {
         String nodeName = getNewName();
-        String nodeDescription = " for ";
+        String nodeDescription = " FOR ";
         Pair<String, String> identifier = visualiseExpression(statement.getIdent());
         String identifierName = identifier.getFirst();
         String identifierDescription = identifier.getSecond();
@@ -176,12 +193,13 @@ public class Visualizer {
         String blockName = block.getFirst();
         String blockDescription = block.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + blockName + "[" + blockDescription + "];\n");
+        emit(NodesColor.IfElseForColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
     public Pair<String, String> visualiseBlock(Block block) {
         String nodeName = getNewName();
-        String nodeDescription = " block ";
+        String nodeDescription = " BLOCK ";
         for(Statement statement : block.get()) {
             Pair<String, String> statementPair = visualiseStatement(statement);
             String statementName = statementPair.getFirst();
@@ -193,15 +211,25 @@ public class Visualizer {
 
     public Pair<String, String> visualiseExpression(Expression expression) {
         if(expression instanceof BooleanLitteral) {
-            return new Pair<>(getNewName(), expression.toString());
+            String nodeName = getNewName();
+            emit(NodesColor.NoneTrueFalseColor(nodeName) + "\n");
+            return new Pair<>(nodeName, expression.toString());
         } else if(expression instanceof NumberLitteral) {
-            return new Pair<>(getNewName(), expression.toString());
+            String nodeName = getNewName();
+            emit(NodesColor.NumberColor(nodeName) + "\n");
+            return new Pair<>(nodeName, expression.toString());
         } else if(expression instanceof StringLitteral) {
-            return new Pair<>(getNewName(), expression.toString());
+            String nodeName = getNewName();
+            emit(NodesColor.StringColor(nodeName) + "\n");
+            return new Pair<>(nodeName, expression.toString());
         } else if(expression instanceof NoneLitteral) {
-            return new Pair<>(getNewName(), expression.toString());
+            String nodeName = getNewName();
+            emit(NodesColor.NoneTrueFalseColor(nodeName) + "\n");
+            return new Pair<>(nodeName, expression.toString());
         } else if(expression instanceof Identifier) {
-            return new Pair<>(getNewName(), expression.toString());
+            String nodeName = getNewName();
+            emit(NodesColor.IdentifierColor(nodeName) + "\n");
+            return new Pair<>(nodeName, expression.toString());
         } else if(expression instanceof FunctionCall) {
             return visualiseFunctionCall((FunctionCall) expression);
         } else if(expression instanceof BinaryOperation) {
@@ -222,7 +250,7 @@ public class Visualizer {
 
     public Pair<String, String> visualiseArrayGet(ArrayGet expression) {
         String nodeName = getNewName();
-        String nodeDescription = " arrayGet ";
+        String nodeDescription = " ARRAY_GET ";
         Pair<String, String> array = visualiseExpression(expression.getArray());
         String arrayName = array.getFirst();
         String arrayDescription = array.getSecond();
@@ -236,7 +264,7 @@ public class Visualizer {
 
     public Pair<String, String> visualiseArrayExpression(ArrayExpression expression) {
         String nodeName = getNewName();
-        String nodeDescription = " array ";
+        String nodeDescription = " ARRAY ";
         for(Expression element : expression.getElements()) {
             Pair<String, String> elementPair = visualiseExpression(element);
             String elementName = elementPair.getFirst();
@@ -248,7 +276,7 @@ public class Visualizer {
 
     public Pair<String, String> visualiseFunctionCall(FunctionCall expression) {
         String nodeName = getNewName();
-        String nodeDescription = " functionCall ";
+        String nodeDescription = " FUNC_CALL ";
         String functionName = getNewName();
         String functionDescription = expression.getName();
         emit(nodeName + "[" + nodeDescription + "] --> " + functionName + "[" + functionDescription + "];\n");
@@ -264,6 +292,9 @@ public class Visualizer {
     public Pair<String, String> visualiseBinaryOperator(BinaryOperation expression) {
         String nodeName = getNewName();
         String nodeDescription = " \\" + expression.getOperator() + " ";
+        if(Character.isAlphabetic(expression.getOperator().charAt(0))) {
+            nodeDescription = "\"" + expression.getOperator() + "\"";
+        }
         Pair<String, String> left = visualiseExpression(expression.getLeft());
         Pair<String, String> right = visualiseExpression(expression.getRight());
         String leftName = left.getFirst();
@@ -272,6 +303,7 @@ public class Visualizer {
         String rightDescription = right.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + leftName + "[" + leftDescription + "];\n");
         emit(nodeName + "[" + nodeDescription + "] --> " + rightName + "[" + rightDescription + "];\n");
+        emit(NodesColor.OperatorColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
@@ -292,6 +324,7 @@ public class Visualizer {
         String innerName = inner.getFirst();
         String innerDescription = inner.getSecond();
         emit(nodeName + "[" + nodeDescription + "] --> " + innerName + "[" + innerDescription + "];\n");
+        emit(NodesColor.OperatorColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 

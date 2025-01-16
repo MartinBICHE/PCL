@@ -74,15 +74,7 @@ public class StmtParser {
 
     public static PrintStatement parsePrintStatement(Parser parser) throws ParserError {
         parser.consume();
-        if(!(parser.peek() instanceof OpeningParenthesisToken)){
-            throw new ParserError(ParserErrorKind.ExpectedOpeningParenthesis, parser.getPosition(), parser.peek());
-        }
-        parser.consume();
         Expression expression = ExprParser.parseExpr(parser);
-        if(!(parser.peek() instanceof ClosingParenthesisToken)){
-            throw new ParserError(ParserErrorKind.ExpectedClosingParenthesis, parser.getPosition(), parser.peek());
-        }
-        parser.consume();
         PrintStatement printStatement = new PrintStatement(expression);
         return printStatement;
     }
