@@ -1,26 +1,13 @@
 def hello(name):
-    return "Hello, "+name+"!"
-
-n = [1, 2, 3]
-
-print (hello(name))
-if a == 5:
-    c = 3
-    for elem in loist:
-        print(elem)
-        elem = elem * 56 + 3
-else:
-    print("hi there")
-
-def fun():
-    for elem in list:
-        print(elem + "and" + "bye")
-    print("hello")
-    hello(name)
-    if something:
-        print("hello")
-        return "hello"
+    if name != None and True:
+        print "hello " + name
+        return 42
     else:
-        print("bye")
-        return "bye" + "bye"
-    return "hello" + "world" + "!"
+        print "An error occured"
+        return -1
+
+names = ["Martin", "Zoé"]
+count = 0
+for name in names:
+    count = count + hello(name)
+names[count % 2] = str(count)
