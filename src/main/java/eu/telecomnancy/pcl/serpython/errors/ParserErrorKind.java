@@ -24,7 +24,8 @@ public enum ParserErrorKind {
     ExpectedForToken(18,"Expected for token"),
     ExpectedIfToken(19,"Expected if token"),
     ExpectedDefToken(20,"Expected def token"),
-    MissingColon(21, "Missing colon ':'");
+    MissingColon(21, "Missing colon ':'"),
+    MissingStatement(22, "Missing statement (at least a statement is expected)");
 
     private final String message;
     private final int code;
@@ -48,7 +49,7 @@ public enum ParserErrorKind {
     }
 
     /**
-     * Get the error code.
+     * Get the error code.mptyProgram
      * @return The error code.
      */
     public int getCode() {

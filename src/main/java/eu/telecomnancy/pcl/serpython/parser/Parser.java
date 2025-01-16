@@ -138,6 +138,9 @@ public class Parser {
                 }
             }
        }
+       if (statements.isEmpty()){
+           throw new ParserError(ParserErrorKind.MissingStatement, getPosition());
+       }
        Block bloc = new Block(statements);
        return new Program(functions, bloc);
     }

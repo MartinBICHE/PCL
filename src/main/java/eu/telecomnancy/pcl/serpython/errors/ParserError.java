@@ -104,7 +104,7 @@ public class ParserError extends Exception {
         super("ParserError: " + kind.getMessage() + formatSpan(span) + formatContext(context));
         this.kind = kind;
         this.span = span;
-        this.context = context.toString();
+        this.context = context != null ? context.toString() : null;
     }
 
     /**
@@ -119,7 +119,7 @@ public class ParserError extends Exception {
         super("ParserError: " + kind.getMessage() + formatSpan(span) + formatContext(context), cause);
         this.kind = kind;
         this.span = span;
-        this.context = context.toString();
+        this.context = context != null ? context.toString() : null;
     }
 
     /**
@@ -175,6 +175,9 @@ public class ParserError extends Exception {
     public String getErrorLine(String context) {
         int line = this.span.getLine();
         String[] lines = context.split("\n");
+        if (line <= 0) {
+            return "";
+        }
         if(line <= lines.length) {
             return lines[line - 1];
         }
