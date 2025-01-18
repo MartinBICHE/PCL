@@ -89,6 +89,7 @@ public class StmtParser {
                 throw new ParserError(ParserErrorKind.ExpectedNewLine, parser.getPosition(), parser.peek());
             }
             parser.consume();
+            return new Block(statementList);
         }
         if (!(parser.peek() instanceof BeginToken)) {
             throw new ParserError(ParserErrorKind.ExpectedBegin, parser.getPosition(), parser.peek());

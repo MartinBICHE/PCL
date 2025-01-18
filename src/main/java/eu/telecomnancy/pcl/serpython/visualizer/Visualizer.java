@@ -172,7 +172,7 @@ public class Visualizer {
             String elseBlockName = elseBlock.getFirst();
             String elseBlockDescription = elseBlock.getSecond();
             emit(elseNodeName + "[" + elseNodeDescription + "] --> " + elseBlockName + "[" + elseBlockDescription + "];\n");
-            emit(nodeName + " --> " + elseNodeName + "\n");
+            emit(nodeName + "[" + nodeDescription + "] --> " + elseNodeName + "[" + elseNodeDescription + "]\n");
         }
         emit(NodesColor.IfElseForColor(nodeName) + "\n");
         return new Pair<>(nodeName, nodeDescription);
@@ -280,12 +280,15 @@ public class Visualizer {
         String functionName = getNewName();
         String functionDescription = expression.getName();
         emit(nodeName + "[" + nodeDescription + "] --> " + functionName + "[" + functionDescription + "];\n");
+        String argumentsNodeName = getNewName();
+        String argumentsNodeDescription = " ARGUMENTS ";
         for(Expression argument : expression.getArguments()) {
             Pair<String, String> argumentPair = visualiseExpression(argument);
             String argumentName = argumentPair.getFirst();
             String argumentDescription = argumentPair.getSecond();
-            emit(nodeName + "[" + nodeDescription + "] --> " + argumentName + "[" + argumentDescription + "];\n");
+            emit(argumentsNodeName + "[" + argumentsNodeDescription + "] --> " + argumentName + "[" + argumentDescription + "];\n");
         }
+        emit(nodeName + "[" + nodeDescription + "] --> " + argumentsNodeName + "[" + argumentsNodeDescription + "]\n");
         return new Pair<>(nodeName, nodeDescription);
     }
 
