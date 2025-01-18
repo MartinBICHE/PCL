@@ -1,0 +1,8 @@
+def compute(a, b):
+    result = 0
+    for i in range(a, b):
+        result = result + a * b
+    return result
+
+something = compute(42, 666) | 5
+print "Here is " + something

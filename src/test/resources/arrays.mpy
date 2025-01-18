@@ -1,0 +1,6 @@
+def size(name):
+    return 2 * len(name)
+
+names = ["Martin", "Zoé", "Timothée", "Théophile"]
+names[size(name) % 4] = "?"
+print "Hello, " + names[0]

@@ -1,0 +1,7 @@
+def func(a, 2):
+    sum = 0
+    for i range(5):
+        sum = sum + + i
+    return sum
+
+func("Hello") = 5
