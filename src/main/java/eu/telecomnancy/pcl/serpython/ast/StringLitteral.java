@@ -30,6 +30,6 @@ public class StringLitteral extends Expression {
 
     @Override
     public String toString() {
-        return "\"" + value + "\"";
+        return "\" " + value + " \"";
     }
 }
